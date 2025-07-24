@@ -1,0 +1,116 @@
+.hover-dropdown:hover > .dropdown-menu {
+    display: block;
+    margin-top: 0; /* evita salto visual al abrir */
+}
+
+.hover-dropdown > .dropdown-toggle::after {
+    transition: transform 0.2s;
+}
+
+/* Opcional: gira el caret al hacer hover */
+.hover-dropdown:hover > .dropdown-toggle::after {
+    transform: rotate(180deg);
+}
+
+
+.subFormBox {
+    display: none;
+    border: 2px solid #0d6efd; /* shorter and complete */
+    border-radius: 15px; /* smoother, or keep 30% if you want */
+    padding: 1rem; /* spacing inside the box */
+    margin-top: 1rem; /* spacing from the top */
+    transition: all 0.3s ease; /* smooth appearance if you animate it later */
+}
+
+.delete {
+    padding: 0 !important;
+}
+
+.delete > a {
+    text-decoration: none;
+}
+
+
+.scrollable-table {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+
+.scrollable-table thead {
+    position: sticky;
+    top: 0;
+    background-color: inherit;
+    z-index: 2;
+}
+
+.table-container {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.table-box {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 1rem;
+    background-color: #f8f9fa;
+}
+
+.ingreso {
+    background: #f8f9fa;
+    box-shadow: inset 0 0 30px #7ecd73;
+}
+
+.gasto {
+    background: #f8f9fa;
+    box-shadow: inset 0 0 30px #ff918b;
+}
+
+.drop-zone {
+    border: thick double #8cc6ff;
+    border-radius: 10px;
+    padding: 2em;
+    text-align: center;
+    cursor: pointer;
+    color: #666;
+}  .drop-zone:hover, .drop-zone.dragover {
+    box-shadow: inset 0 0 30px #8cc6ff;
+}
+
+.archivos-container {
+    max-height: 30px;
+    overflow-y: auto;
+}
+
+.archivo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px dashed #8cc6ff;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    background: #f9f9f9;
+}
+
+.archivo span.circle {
+    cursor: pointer;
+    color: #dc3545;
+    font-weight: bold;
+    margin-left: 1rem;
+    transition: transform 0.2s;
+}
+
+.archivo span.circle:hover {
+    transform: scale(1.2);
+}
+
+
+ .fondo-blanco{
+     background-color: #e9ecef;
+ }
+
+tfoot tr th {
+    background-color: #e9ecef;
+}
