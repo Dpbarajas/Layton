@@ -16,7 +16,6 @@ $modoEdicion = $idProducto !== 0;
 // Variables iniciales
 $producto = [
     'nomProd' => '',
-    'comision' => '',
     'retrocomision' => '',
     'proveedor' => $_SESSION['productos']['idProveedorCreado'] ?? '',
     'notasProd' => ''
@@ -72,12 +71,12 @@ endif;
         <div class="row">
             <!-- Main form fields -->
             <div class="col-md-8">
-                <div class="mb-2">
+                <div class="mb-4">
                     <label for="nomProd" class="form-label">Nombre Producto</label>
                     <input type="text" id="nomProd" name="nomProd" class="form-control" value="<?= $producto['nomProd'] ?>" required>
                 </div>
 
-                <div class="mb-2">
+                <div class="mb-4">
                     <label for="proveedor" class="form-label">Proveedor</label>
                     <select name="proveedor" id="proveedor" class="form-select" required>
                         <option value="">-- Selecciona un proveedor --</option>
@@ -110,12 +109,7 @@ endif;
                     <input type="text" id="web" name="web" class="form-control proveedorInputs">
                 </div>
 
-                <div class="mb-2">
-                    <label for="comision" class="form-label">Comision</label>
-                    <input type="number" step="0.01" name="comision" id="comision" class="form-control" value="<?= $producto['comision'] ?>" required>
-                </div>
-
-                <div class="mb-2">
+                <div class="mb-4">
                     <label for="retrocomision" class="form-label">Tipo de Retrocomision</label>
 
                     <select name="retrocomision" id="retrocomision" class="form-select mb-2" required>
@@ -125,7 +119,7 @@ endif;
                     </select>
                 </div>
 
-                <div class="d-flex justify-content-between mt-4">
+                <div class="d-flex justify-content-between mt-5">
                     <a href="<?= $origen ?>" class="btn btn-secondary">Volver</a>
                     <button id="submitButton" type="submit" onclick="changeAction('formProductos', '/productos/accion.php', null, null, ['nomProd', 'comision', 'proveedor'], [])" class="btn btn-primary"><?= $modoEdicion ? 'Guardar Cambios' : 'Crear Producto' ?></button>
                 </div>
@@ -134,7 +128,7 @@ endif;
             <!-- Columna de notas  -->
             <div class="col-md-4">
                 <label for="notasProd" class="form-label">Notas</label>
-                <textarea name="notasProd" id="notas" rows="12" class="form-control"><?= trim($producto['notasProd'] ?? ' ') ?></textarea>
+                <textarea name="notasProd" id="notasProd" rows="12" class="form-control"><?= trim($producto['notasProd'] ?? ' ') ?></textarea>
             </div>
         </div>
     </div>

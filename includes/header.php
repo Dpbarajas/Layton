@@ -13,6 +13,7 @@
 <body class="bg-light">
 
 <!-- Navbar -->
+<?php if (!isset($noCargarNavBar)): ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
         <a class="navbar-brand" href="/index.php">ToniNet</a>
@@ -61,7 +62,7 @@
                 </button>
             </div>
             <div class="modal-body" id="modalBody">
-                <!-- Dynamic content will be loaded here -->
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -69,5 +70,6 @@
         </div>
     </div>
 </div>
+<?php endif; ?>
 
 <div class="container py-4">

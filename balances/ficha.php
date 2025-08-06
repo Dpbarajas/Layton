@@ -141,8 +141,14 @@ if ($modoEdicion) {
 
             <!-- Columna para subir documentos -->
             <div class="col-md-5">
-                <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center">
                     <label class="form-label">Adjuntar Documentos</label>
+
+                    <button type="button" class="btn btn-outline-primary p-0 border-0" id="btnVerArchivos" data-bs-toggle="modal" data-bs-target="#visorDocumentosModal">
+                        <img src="/assets/img/attachments.svg">
+                    </button>
+                </div>
+                <div>
                     <div class="drop-zone" id="drop-zone">
                         <img src="/assets/img/plus-circle.svg" alt="Plus Circle" style="pointer-events: none;">
                         <br>
@@ -154,13 +160,33 @@ if ($modoEdicion) {
                                multiple
                                hidden>
                     </div>
-                    <div id="file-list"></div>
+                    <div id="lista-archivos"></div>
 
                 </div>
 
             </div>
         </div>
 </form>
+
+<!-- Modal -->
+<div class="modal fade" id="visorDocumentosModal" tabindex="-1" aria-labelledby="visorDocumentosModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable modal-fullscreen-md-down">
+        <!-- XL en desktop, fullscreen en pantallas medianas y menores -->
+        <div class="modal-content d-flex flex-column" style="height: 90vh;"> <!-- Limita altura -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="visorDocumentosModalLabel">Archivos Adjuntos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body p-0 flex-grow-1 d-flex"> <!-- Sin padding, visor ocupa todo -->
+                <iframe id="iframeVisor"
+                        src=""
+                        class="w-100 h-100 border-0"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <?php include '../includes/footer.php'; ?>
 
@@ -219,9 +245,20 @@ if ($modoEdicion) {
         totalInput.addEventListener('input', actualizarCalculosTotal);
 
     });
-
-
 </script>
+
+<script>
+    document.getElementById('btnVerArchivos').addEventListener('click', function() {
+        const iframe = document.getElementById('iframeVisor');
+
+        // Ejemplo: pasa tu ID dinámico
+        const idBalance = <?= (int)$_GET['idBalance'] ?>; // O donde tengas el ID
+        const tipoBalance = "<?= $tipoBalance ?>"; // Por si lo necesitas
+
+        iframe.src = `visorDocumentos.php?tipoBalance=${tipoBalance}&idBalance=${idBalance}`;
+    });
+</script>
+
 
 
 <script>
@@ -230,7 +267,7 @@ if ($modoEdicion) {
 
         const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('documentos');
-        const fileList = document.getElementById('file-list');
+        const listaArchivos = document.getElementById('lista-archivos');
 
         let archivosAcumulados = [];
 
@@ -264,12 +301,12 @@ if ($modoEdicion) {
         }
 
         function renderLista() {
-            fileList.innerHTML = '';
-            archivosAcumulados.forEach((file, index) => {
-                const item = document.createElement('div');
-                item.classList.add('scrollable-table', 'archivo');
+            listaArchivos.innerHTML = '';
+            archivosAcumulados.forEach((archivo, index) => {
+                const elemento = document.createElement('div');
+                elemento.classList.add('archivo');
 
-                item.textContent = `${file.name} (${Math.round(file.size / 1024)} KB)`;
+                elemento.textContent = `${archivo.name} (${Math.round(archivo.size / 1024)} KB)`;
 
                 const removeBtn = document.createElement('span');
                 removeBtn.classList.add('circle');
@@ -280,8 +317,8 @@ if ($modoEdicion) {
                     renderLista();
                 };
 
-                item.appendChild(removeBtn);
-                fileList.appendChild(item);
+                elemento.appendChild(removeBtn);
+                listaArchivos.appendChild(elemento);
             });
         }
 

@@ -12,9 +12,42 @@ $id = "id" . ucfirst($tipoBalance);
 
 $success = false;
 
-$base = str_replace(['€', ',', ' '], ['', '.', ''], $_POST['baseImponible']) ?? 0;
-$iva = str_replace(['€', ',', ' '], ['', '.', ''], $_POST['iva-cant']) ?? 0;
-$irpf = str_replace(['€', ',', ' '], ['', '.', ''], $_POST['irpf-cant']) ?? 0;
+$base = floatval(str_replace(['€', ',', ' '], ['', '.', ''], $_POST['baseImponible']) ?? 0);
+
+function anyadirDocumentos($tipoBalance, $idBalance) {
+    global $db;
+
+    if (empty($_FILES['documentos']['name'][0])) return; // Nada que subir
+
+    $ubicacion = "/uploads/$tipoBalance/$idBalance/";
+    $directorio = __DIR__ . "/.." . $ubicacion;
+    if (!file_exists($directorio)) {
+        mkdir($directorio, 0777, true);
+    }
+
+    foreach ($_FILES['documentos']['tmp_name'] as $index => $tmpName) {
+        if (!is_uploaded_file($tmpName)) continue;
+
+        $nombreOriginal = basename($_FILES['documentos']['name'][$index]);
+        $nombreDepurado = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $nombreOriginal);
+        $destino = $ubicacion . $nombreDepurado;
+
+
+        // Si ya existe, se añade sufijo único
+        $i = 1;
+        $infoArchivo = pathinfo($destino);
+        while (file_exists($destino)) {
+            $destino = $infoArchivo['dirname'] . '/' . $infoArchivo['filename'] . "_$i." . $infoArchivo['extension'];
+            $i++;
+        }
+
+        move_uploaded_file($tmpName, $directorio . $nombreDepurado);
+
+        // Opcional: guardar en tabla documento
+        $stmt = $db->prepare("INSERT INTO documento (tipoBalance, idBalance, nombreArchivo, rutaArchivo) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$tipoBalance, $idBalance, $nombreDepurado, $destino]);
+    }
+}
 
 try {
     switch ($action) {
@@ -26,9 +59,14 @@ try {
                 ':fecha' => $_POST['fecha'],
                 ':empresa' => $_POST['empresa'],
                 ':baseImponible' => $base,
-                ':iva' => $iva,
-                ':irpf' => $irpf
+                ':iva' => $_POST['iva-perc'],
+                ':irpf' => $_POST['irpf-perc']
             ]);
+
+            if ($success) {
+                $idBalance = $db->lastInsertId();
+                anyadirDocumentos($tipoBalance, $idBalance);
+            }
 
             $infoMessage = "Producto creado correctamente";
             $errorMessage = "Hubo un problema al crear el producto";
@@ -36,7 +74,9 @@ try {
             break;
 
         case 'editar':
-            $prodOriginal = $db->query("SELECT * FROM $tipoBalance WHERE $id = " . $_POST[$id])->fetch(PDO::FETCH_ASSOC);
+            $idBalance = $_POST['idBalance'];
+
+            $prodOriginal = $db->query("SELECT * FROM $tipoBalance WHERE $id = " . $idBalance)->fetch(PDO::FETCH_ASSOC);
 
             $stmt = $db->prepare("UPDATE $tipoBalance 
                               SET fecha = :fecha,
@@ -50,16 +90,20 @@ try {
                 ':fecha' => $_POST['fecha'],
                 ':empresa' => $_POST['empresa'],
                 ':baseImponible' => $base,
-                ':iva' => $iva,
-                ':irpf' => $irpf,
-                ':' . $id => $_POST['idBalance']
+                ':iva' => $_POST['iva-perc'],
+                ':irpf' => $_POST['irpf-perc'],
+                ':id' => $idBalance
             ]);
 
-            $prodModificado = $db->query("SELECT * FROM producto WHERE idProducto = " . $_POST['idProducto'])->fetch(PDO::FETCH_ASSOC);
+            if ($success) {
+                anyadirDocumentos($tipoBalance, $idBalance);
+            }
+
+            $balancModificado = $db->query("SELECT * FROM $tipoBalance WHERE id$tipoBalance = " . $_POST['idProducto'])->fetch(PDO::FETCH_ASSOC);
 
             if($success) {
                 $modificado = false;
-                foreach ($prodModificado as $key => $value) {
+                foreach ($balancModificado as $key => $value) {
                     if($value !== $prodOriginal[$key]){
                         $modificado = true;
                         break;
