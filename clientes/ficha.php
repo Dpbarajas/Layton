@@ -40,25 +40,27 @@ if ($modoEdicion) {
 
 <?php include '../includes/header.php'; ?>
 
-<form method="POST" action="accion.php" class="mt-3">
+<form method="POST" action="accion.php" class="mt-0">
     <input type="hidden" id="accion" name="accion" value="<?= $modoEdicion ? "editar" : "crear" ?>">
     <input type="hidden" id="origen" name="origen" value="<?= $origen ?>">
 
     <div class="container">
-        <h2><?= $modoEdicion ? 'Editar Cliente' : 'Nuevo Cliente' ?></h2>
+        <div class="table-box mb-2 row">
+            <h2 class="mb-0"><?= $modoEdicion ? 'Editar Cliente' : 'Nuevo Cliente' ?></h2>
+        </div>
 
         <input type="hidden" readonly name="idCliente" id="idCliente" value="<?= $idCliente ?>">
 
-        <div class="row">
+        <div class="table-box row">
             <!-- Main form fields -->
             <div class="mb-2">
-                <label for="nomCli" class="form-label">Cliente</label>
+                <label for="nomCli" class="form-label requerido">Cliente</label>
                 <input type="text" required name="nomCli" id="nomCli" class="form-control"
                        value="<?= $cliente['nomCli'] ?>">
             </div>
 
             <div class="mb-2">
-                <label for="persona_contacto" class="form-label">Persona de Contacto</label>
+                <label for="persona_contacto requerido" class="form-label">Persona de Contacto</label>
                 <input type="text" required name="persona_contacto" id="persona_contacto" class="form-control"
                        value="<?= $cliente['persona_contacto'] ?>">
             </div>

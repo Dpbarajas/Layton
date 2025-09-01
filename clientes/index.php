@@ -12,19 +12,17 @@ function iconoOrden($columna, $actual, $direccion)
     endif;
 }
 
-if(!isset($_SESSION['clientes']['orderBy'])) $_SESSION['clientes']['orderBy'] = "idCliente";
-if(!isset($_SESSION['clientes']['order'])) $_SESSION['clientes']['order'] = true;
+if (!isset($_SESSION['clientes']['orderBy'])) $_SESSION['clientes']['orderBy'] = "idCliente";
+if (!isset($_SESSION['clientes']['order'])) $_SESSION['clientes']['order'] = true;
 
 $orderDirection = true;
-if(isset($_GET['orderBy'])):
+if (isset($_GET['orderBy'])):
     if ($_GET['orderBy'] !== $_SESSION['clientes']['orderBy']):
         $_SESSION['clientes']['orderBy'] = $_GET['orderBy'];
         $_SESSION['clientes']['order'] = true;
     else:
         $_SESSION['clientes']['order'] = !$_SESSION['clientes']['order'];
     endif;
-
-    header("Location: index.php");
 endif;
 
 $orderColumn = $_SESSION['clientes']['orderBy'];
@@ -51,7 +49,7 @@ $totalPaginas = ceil($totalClientes / $clientesPorPagina);
 $pagInfo = "Del " . ($offset + 1) . " al " . min($offset + $clientesPorPagina, $totalClientes) . " de " . $totalClientes . " clientes.";
 
 
-if (! isset($_SESSION['clientes']['filtrosCliente'])) $_SESSION['clientes']['filtrosCliente'] = [];
+if (!isset($_SESSION['clientes']['filtros'])) $_SESSION['clientes']['filtros'] = [];
 $where = "WHERE c.baja = 0";
 
 
@@ -60,10 +58,10 @@ if (!empty($_POST['nomCli'])) {
     $where .= " AND UPPER(c.nomCli) LIKE :nomCli";
 
     $nomCliente = $_POST['nomCli'];
-    $_SESSION['clientes']['filtrosCliente'][':nomCli'] = "%" . strtoupper($nomCliente) . "%";
+    $_SESSION['clientes']['filtros'][':nomCli'] = "%" . strtoupper($nomCliente) . "%";
 } else {
     $nomCliente = '';
-    unset($_SESSION['clientes']['filtrosCliente'][':nomCli']);
+    unset($_SESSION['clientes']['filtros'][':nomCli']);
 }
 
 // Nombre Cliente
@@ -71,10 +69,10 @@ if (!empty($_POST['persona_contacto'])) {
     $where .= " AND UPPER(c.persona_contacto) LIKE :persona_contacto";
 
     $persContacto = $_POST['persona_contacto'];
-    $_SESSION['clientes']['filtrosCliente'][':persona_contacto'] = "%" . strtoupper($persContacto) . "%";
+    $_SESSION['clientes']['filtros'][':persona_contacto'] = "%" . strtoupper($persContacto) . "%";
 } else {
     $persContacto = '';
-    unset($_SESSION['clientes']['filtrosCliente'][':persona_contacto']);
+    unset($_SESSION['clientes']['filtros'][':persona_contacto']);
 }
 
 
@@ -85,7 +83,7 @@ $sql = "SELECT c.* FROM cliente c
 
 $stmt = $db->prepare($sql);
 
-foreach ($_SESSION['clientes']['filtrosCliente'] as $clave => $valor) {
+foreach ($_SESSION['clientes']['filtros'] as $clave => $valor) {
     $stmt->bindValue($clave, $valor);
 }
 
@@ -114,7 +112,7 @@ endif;
 
 <script>
     function activarCliente(activar, idCliente) {
-        if(activar) {
+        if (activar) {
             window.location.href = "accion.php?accion=activar&idCliente=" + idCliente;
         } else {
             window.location.href = "accion.php?accion=desactivar&idCliente=" + idCliente;
@@ -125,36 +123,41 @@ endif;
 
 <?php include __DIR__ . "/../includes/header.php"; ?>
 
-<?php if(!empty($tipoMensaje)): ?>
+<?php if (!empty($tipoMensaje)): ?>
     <div class="alert alert-<?= $tipoMensaje ?> alert-dismissible fade show" role="alert">
         <?= $message ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 
-<h1 class="mb-4">Clientes</h1>
+<div class="table-box d-flex justify-content-between align-items-center mb-2">
+    <h2>Clientes</h2>
+    <a href="/clientes/ficha.php?idCliente=0" class="btn btn-success text-nowrap">Nuevo cliente</a>
+
+</div>
 
 <!-- FILTROS -->
-<form method="POST" class="row g-3 mb-4">
-    <div class="col-md-3">
-        <label for="nomCli" class="form-label">Cliente</label>
-        <input type="text" name="nomCli" id="nomCli" class="form-control" value="<?= $nomCliente ?>">
-    </div>
+<div class="table-box mb-2 pb-0">
+    <form method="POST" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label for="nomCli" class="form-label">Cliente</label>
+            <input type="text" name="nomCli" id="nomCli" class="form-control" value="<?= $nomCliente ?>">
+        </div>
 
-    <div class="col-md-3">
-        <label for="persona_contacto" class="form-label">Persona Contacto</label>
-        <input type="text" name="persona_contacto" id="persona_contacto" class="form-control" value="<?= $persContacto ?>">
-    </div>
+        <div class="col-md-3">
+            <label for="persona_contacto" class="form-label">Persona Contacto</label>
+            <input type="text" name="persona_contacto" id="persona_contacto" class="form-control"
+                   value="<?= $persContacto ?>">
+        </div>
 
-    <div class="col-md-2"></div>
+        <div class="col-md-4"></div>
 
-    <div class="col-md-4 d-flex align-items-end gap-2">
-        <button type="submit" class="btn btn-outline-primary flex-fill">Filtrar</button>
-        <a href="index.php" class="btn btn-outline-danger flex-fill">Reset</a>
-        <a href="/clientes/ficha.php?idCliente=0" class="flex-fill btn btn-success text-nowrap">Nuevo cliente</a>
-    </div>
-</form>
-
+        <div class="col-md-2 d-flex align-items-end gap-2">
+            <button type="submit" class="btn btn-outline-primary flex-fill">Filtrar</button>
+            <a href="index.php" class="btn btn-outline-danger flex-fill">Reset</a>
+        </div>
+    </form>
+</div>
 
 <!-- LISTADO -->
 <table class="table table-bordered table-striped table-hover align-middle">

@@ -12,19 +12,17 @@ function iconoOrden($columna, $actual, $direccion)
     endif;
 }
 
-if(!isset($_SESSION['productos']['orderBy'])) $_SESSION['productos']['orderBy'] = "idProducto";
-if(!isset($_SESSION['productos']['order'])) $_SESSION['productos']['order'] = true;
+if (!isset($_SESSION['productos']['orderBy'])) $_SESSION['productos']['orderBy'] = "idProducto";
+if (!isset($_SESSION['productos']['order'])) $_SESSION['productos']['order'] = true;
 
 $orderDirection = true;
-if(isset($_GET['orderBy'])):
+if (isset($_GET['orderBy'])):
     if ($_GET['orderBy'] !== $_SESSION['productos']['orderBy']):
         $_SESSION['productos']['orderBy'] = $_GET['orderBy'];
         $_SESSION['productos']['order'] = true;
     else:
         $_SESSION['productos']['order'] = !$_SESSION['productos']['order'];
     endif;
-
-    header("Location: index.php");
 endif;
 
 $orderColumn = $_SESSION['productos']['orderBy'];
@@ -51,7 +49,7 @@ $totalPaginas = ceil($totalProductos / $productosPorPagina);
 $pagInfo = "Del " . ($offset + 1) . " al " . min($offset + $productosPorPagina, $totalProductos) . " de " . $totalProductos . " productos.";
 
 
-if (! isset($_SESSION['productos']['filtrosProducto'])) $_SESSION['productos']['filtrosProducto'] = [];
+if (!isset($_SESSION['productos']['filtros'])) $_SESSION['productos']['filtros'] = [];
 $where = "WHERE p.baja = 0";
 
 
@@ -60,10 +58,10 @@ if (!empty($_POST['nomProd'])) {
     $where .= " AND UPPER(p.nomProd) LIKE :nomProd";
 
     $nomProducto = $_POST['nomProd'];
-    $_SESSION['productos']['filtrosProducto'][':nomProd'] = "%" . strtoupper($nomProducto) . "%";
+    $_SESSION['productos']['filtros'][':nomProd'] = "%" . strtoupper($nomProducto) . "%";
 } else {
     $nomProducto = '';
-    unset($_SESSION['productos']['filtrosProducto'][':nomProd']);
+    unset($_SESSION['productos']['filtros'][':nomProd']);
 }
 
 // Proveedor
@@ -71,51 +69,27 @@ if (!empty($_POST['proveedor'])) {
     $where .= " AND UPPER(pv.nomProv) LIKE :proveedor";
 
     $proveedor = $_POST['proveedor'];
-    $_SESSION['productos']['filtrosProducto'][':proveedor'] = "%" . strtoupper($proveedor) . "%";
+    $_SESSION['productos']['filtros'][':proveedor'] = "%" . strtoupper($proveedor) . "%";
 } else {
     $proveedor = '';
-    unset($_SESSION['productos']['filtrosProducto'][':proveedor']);
-}
-
-// Comision Desde
-if (!empty($_POST['comisionDesde'])) {
-    $where .= " AND p.comision >= :comisionDesde";
-
-    $comisionDesde = $_POST['comisionDesde'];
-    $_SESSION['productos']['filtrosProducto'][':comisionDesde'] = $comisionDesde;
-} else {
-    $comisionDesde = '';
-    unset($_SESSION['productos']['filtrosProducto'][':comisionDesde']);
-}
-
-// Comision Hasta
-if (!empty($_POST['comisionHasta'])) {
-    $where .= " AND p.comision <= :comisionHasta";
-
-    $comisionHasta = $_POST['comisionHasta'];
-    $_SESSION['productos']['filtrosProducto'][':comisionHasta'] = $comisionHasta;
-} else {
-    $comisionHasta = '';
-    unset($_SESSION['productos']['filtrosProducto'][':comisionHasta']);
+    unset($_SESSION['productos']['filtros'][':proveedor']);
 }
 
 if (!empty($_POST['retrocomision'])) {
-    if($_POST['retrocomision'] != 'null'){
+    if ($_POST['retrocomision'] != 'null') {
         $where .= " AND p.retrocomision = :retrocomision";
 
-        var_dump(empty($_POST['retrocomision']));
         $retrocomision = $_POST['retrocomision'];
-        $_SESSION['productos']['filtrosProducto'][':retrocomision'] = $retrocomision;
-    }
-    else {
+        $_SESSION['productos']['filtros'][':retrocomision'] = $retrocomision;
+    } else {
         $where .= " AND p.retrocomision IS NULL";
 
         $retrocomision = "null";
-        unset($_SESSION['productos']['filtrosProducto'][':retrocomision']);
+        unset($_SESSION['productos']['filtros'][':retrocomision']);
     }
 } else {
     $retrocomision = '';
-    unset($_SESSION['productos']['filtrosProducto'][':retrocomision']);
+    unset($_SESSION['productos']['filtros'][':retrocomision']);
 }
 
 // Notas
@@ -123,12 +97,11 @@ if (!empty($_POST['notasProd'])) {
     $where .= " AND UPPER(p.proveedor) LIKE :notasProd";
 
     $notasProd = $_POST['notasProd'];
-    $_SESSION['productos']['filtrosProducto'][':notasProd'] = "%" . strtoupper($notasProd) . "%";
+    $_SESSION['productos']['filtros'][':notasProd'] = "%" . strtoupper($notasProd) . "%";
 } else {
     $notasProd = '';
-    unset($_SESSION['productos']['filtrosProducto'][':notasProd']);
+    unset($_SESSION['productos']['filtros'][':notasProd']);
 }
-
 
 
 // Obtener clientes para la página actual
@@ -140,7 +113,7 @@ $sql = "SELECT p.*, pv.nomProv
 
 $stmt = $db->prepare($sql);
 
-foreach ($_SESSION['productos']['filtrosProducto'] as $clave => $valor) {
+foreach ($_SESSION['productos']['filtros'] as $clave => $valor) {
     $stmt->bindValue($clave, $valor);
 }
 
@@ -167,58 +140,59 @@ endif;
 
 <?php include __DIR__ . "/../includes/header.php"; ?>
 
-<?php if(!empty($tipoMensaje)): ?>
+<?php if (!empty($tipoMensaje)): ?>
     <div class="alert alert-<?= $tipoMensaje ?> alert-dismissible fade show" role="alert">
         <?= $message ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 
-<h1 class="mb-4">Productos</h1>
+<div class="table-box d-flex justify-content-between align-items-center mb-2">
+    <h2>Productos</h2>
+    <a href="/productos/ficha.php?idProducto=0" class="btn btn-success text-nowrap">
+        Nuevo producto</a>
+</div>
 
 <!-- FILTROS -->
-<form method="POST" class="row g-3 mb-4">
-    <div class="col-md-1">
-        <label for="nomProd" class="form-label">Producto</label>
-        <input type="text" name="nomProd" id="nomProd" class="form-control" value="<?= $nomProducto ?>">
-    </div>
+<div class="table-box mb-2 pb-0">
+    <form method="POST" class="row g-3 mb-4">
+        <div class="col-md-2">
+            <label for="nomProd" class="form-label">Producto</label>
+            <input type="text" name="nomProd" id="nomProd" class="form-control" value="<?= $nomProducto ?>">
+        </div>
 
-    <div class="col-md-1">
-        <label for="proveedor" class="form-label">Proveedor</label>
-        <input type="text" name="proveedor" id="proveedor" class="form-control" value="<?= $proveedor ?>">
-    </div>
+        <div class="col-md-2">
+            <label for="proveedor" class="form-label">Proveedor</label>
+            <input type="text" name="proveedor" id="proveedor" class="form-control" value="<?= $proveedor ?>">
+        </div>
 
-    <div class="col-md-1">
-        <label for="comisionDesde" class="form-label">Desde</label>
-        <input type="number" name="comisionDesde" id="comisionDesde" class="form-control" value="<?= $comisionDesde ?>" step="0.5">
-    </div>
-    <div class="col-md-1">
-        <label for="comisionHasta" class="form-label">Hasta</label>
-        <input type="number" name="comisionHasta" id="comisionHasta" class="form-control" value="<?= $comisionHasta ?>" step="0.5">
-    </div>
+        <div class="col-md-1"></div>
 
-    <div class="col-md-2">
-        <label for="retrocomision" class="form-label">Retrocomision</label>
-        <select name="retrocomision" id="retrocomision" class="form-select mb-2">
-            <option value="" <?= $retrocomision === "" ? "selected" : "" ?> >Todas</option>
-            <option value="dia" <?= $retrocomision === "dia" ? "selected" : "" ?> >Día</option>
-            <option value="mes" <?= $retrocomision === "mes" ? "selected" : "" ?> >Mes</option>
-            <option value="null" <?= $retrocomision === "null" ? "selected" : "" ?> >Sin R.C. asignada</option>
-        </select>
-    </div>
+        <div class="col-md-2">
+            <label for="retrocomision" class="form-label">Retrocomision</label>
+            <select name="retrocomision" id="retrocomision" class="form-select mb-2">
+                <option value="" <?= $retrocomision === "" ? "selected" : "" ?> >Todas</option>
+                <option value="dia" <?= $retrocomision === "dia" ? "selected" : "" ?> >Día</option>
+                <option value="mes" <?= $retrocomision === "mes" ? "selected" : "" ?> >Mes</option>
+                <option value="null" <?= $retrocomision === "null" ? "selected" : "" ?> >Sin R.C. asignada</option>
+            </select>
+        </div>
 
-    <div class="col-md-2">
-        <label for="notasProd" class="form-label">Notas</label>
-        <input type="text" name="notasProd" id="notasProd" class="form-control" value="<?= $notasProd ?>" step="0.5">
-    </div>
 
-    <div class="col-md-4 d-flex align-items-end gap-2 mb-2">
-        <button type="submit" class="btn btn-outline-primary flex-fill">Filtrar</button>
-        <a href="index.php" class="btn btn-outline-danger flex-fill">Reset</a>
-        <a href="/productos/ficha.php?idProducto=0" class="flex-fill btn btn-success text-nowrap">Nuevo producto</a>
-    </div>
-</form>
+        <div class="col-md-2">
+            <label for="notasProd" class="form-label">Notas</label>
+            <input type="text" name="notasProd" id="notasProd" class="form-control" value="<?= $notasProd ?>"
+            step="0.5">
+        </div>
 
+        <div class="col-md-1"></div>
+
+        <div class="col-md-2 d-flex align-items-end gap-2 mb-2">
+            <button type="submit" class="btn btn-outline-primary flex-fill">Filtrar</button>
+            <a href="index.php" class="btn btn-outline-danger flex-fill">Reset</a>
+        </div>
+    </form>
+</div>
 
 <!-- LISTADO -->
 <table class="table table-bordered table-striped table-hover align-middle">

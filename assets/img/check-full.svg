@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#DDD" class="bi bi-check-circle-full"
+     viewBox="0 0 20 20">
+    <circle cx="10" cy="10" r="9" fill="darkgreen"/>
+    <path d="M10 17 A7 7 0 1 1 10 3 a7 7 0 0 1 0 14 m0 1 A8 8 0 1 0 10 2 a8 8 0 0 0 0 16"/>
+    <path d="M12.97 6.97 L12.95 6.992 L9.477 11.417 L7.384 9.323 A0.75 0.75 0 0 0 6.324 10.383 L8.97 13.03 A0.75 0.75 0 0 0 10.049 13.01 L14.041 8.02 A0.75 0.75 0 0 0 12.97 6.97"/>
+</svg>

@@ -13,9 +13,10 @@ if ($_POST['accion'] === 'eliminar' && isset($_POST['idDocumento'])) {
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($row) {
-        $ruta = __DIR__ . $row['rutaArchivo'];
+        $ruta = realpath(__DIR__ . '/..' . $row['rutaArchivo']);
+
         if (!file_exists($ruta)) {
-            $success = false;
+            echo 'error';
             exit;
         }
 
@@ -57,6 +58,10 @@ if ($_POST['accion'] === 'eliminar' && isset($_POST['idDocumento'])) {
         if (rename($rutaAbsVieja, $rutaAbsNueva)) {
             $stmt = $db->prepare("UPDATE documento SET nombreArchivo = ?, rutaArchivo = ? WHERE idDocumento = ?");
             $success = $stmt->execute([$nuevoNombre, $rutaRelNueva, $idDocumento]);
+
+            if (! $success) {
+                rename($rutaAbsNueva, $rutaAbsVieja);
+            }
         } else {
             $success = false;
             rename($rutaAbsNueva, $rutaAbsVieja);

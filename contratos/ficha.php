@@ -17,10 +17,10 @@ $contrato = [
     'idCliente' => '',
     'idProducto' => '',
     'idProveedor' => '',
-    'fechaVenta' => '',
+    'fechaVenta' => date('Y-m-d'),
     'fechaActivacion' => '',
     'fechaFacturacion' => '',
-    'comision' => '',
+    'comision' => '0.00',
     'estado' => 'Vendido',
 
     'cliente' => '',
@@ -48,6 +48,8 @@ if ($modoEdicion) {
 $clientes = $db->query("SELECT idCliente, nomCli FROM cliente ORDER BY nomCli")->fetchAll(PDO::FETCH_ASSOC);
 $productos = $db->query("SELECT idProducto, nomProd FROM producto ORDER BY nomProd")->fetchAll(PDO::FETCH_ASSOC);
 $proveedores = $db->query("SELECT idProveedor, nomProv FROM proveedor ORDER BY nomProv")->fetchAll(PDO::FETCH_ASSOC);
+
+global $colores;
 ?>
 
 
@@ -55,7 +57,7 @@ $proveedores = $db->query("SELECT idProveedor, nomProv FROM proveedor ORDER BY n
 
 <?php include '../includes/header.php'; ?>
 
-<form id="formContratos" method="POST" action="accion.php" class="mt-3">
+<form id="formContratos" method="POST" action="accion.php" class="mt-0">
     <input type="hidden" id="accion" name="accion" value="<?= $modoEdicion ? "editar" : "crear" ?>">
     <input type="hidden" id="accionOriginal" name="accionOriginal" value="<?= $modoEdicion ? "editar" : "crear" ?>">
 
@@ -64,15 +66,17 @@ $proveedores = $db->query("SELECT idProveedor, nomProv FROM proveedor ORDER BY n
 
 
     <div class="container">
-        <h2><?= $modoEdicion ? 'Editar Contrato' : 'Nuevo Contrato' ?></h2>
+        <div class="table-box mb-2 row">
+            <h2 class="mb-0"><?= $modoEdicion ? 'Editar Contrato' : 'Nuevo Contrato' ?></h2>
+        </div>
 
         <input type="hidden" readonly name="idContrato" id="idContrato" value="<?= $idContrato ?>">
 
-        <div class="row">
+        <div class="table-box row">
             <!-- Main form fields -->
             <div class="col-md-8">
                 <div class="mb-2">
-                    <label for="idCliente" class="form-label">Cliente</label>
+                    <label for="idCliente" class="form-label requerido">Cliente</label>
                     <select name="idCliente" id="idCliente" class="form-select" required>
                         <option value="">-- Selecciona un cliente --</option>
                         <option value="" disabled></option>
@@ -109,8 +113,8 @@ $proveedores = $db->query("SELECT idProveedor, nomProv FROM proveedor ORDER BY n
                  -->
 
                 <div class="mb-2">
-                    <label for="idProveedor" class="form-label">Proveedor</label>
-                    <select name="idProveedor" id="idProveedor" class="form-select" required>
+                    <label for="selProveedor" class="form-label requerido">Proveedor</label>
+                    <select name="selProveedor" id="selProveedor" class="form-select" required>
                         <option value="">-- Selecciona un proveedor --</option>
                         <option value="" disabled></option>
                         <?php foreach ($proveedores as $proveedor): ?>
@@ -142,8 +146,8 @@ $proveedores = $db->query("SELECT idProveedor, nomProv FROM proveedor ORDER BY n
 
 
                 <div class="mb-2">
-                    <label for="idProducto" class="form-label">Producto</label>
-                    <select name="idProducto" id="idProducto" class="form-select" required>
+                    <label for="selProducto" class="form-label requerido">Producto</label>
+                    <select name="selProducto" id="selProducto" class="form-select" required>
                         <option value="">-- Selecciona un producto --</option>
                         <option value="" disabled></option>
                         <?php foreach ($productos as $producto): ?>
@@ -195,16 +199,16 @@ $proveedores = $db->query("SELECT idProveedor, nomProv FROM proveedor ORDER BY n
                 -->
 
                 <div class="mb-2">
-                    <label for="fechaVenta" class="form-label">Fecha Venta</label>
-                    <input type="date" name="fechaVenta" id="fechaVenta" class="form-control"
-                           value="<?= $contrato['fechaVenta'] ?>" required>
-                </div>
-
-                <div class="mb-2">
-                    <label for="comision" class="form-label">Comision</label>
+                    <label for="comision" class="form-label requerido">Comision</label>
                     <input type="number" step="0.01" name="comision" id="comision"
                            class="form-control dinero"
                            value="<?= $contrato['comision'] ?>" required>
+                </div>
+
+                <div class="mb-2">
+                    <label for="fechaVenta" class="form-label requerido">Fecha Venta</label>
+                    <input type="date" name="fechaVenta" id="fechaVenta" class="form-control"
+                           value="<?= $contrato['fechaVenta'] ?>" required>
                 </div>
 
                 <div class="mb-2">
@@ -213,11 +217,34 @@ $proveedores = $db->query("SELECT idProveedor, nomProv FROM proveedor ORDER BY n
                            value="<?= $contrato['fechaActivacion'] ?>">
                 </div>
 
-                <div class="mb-2">
-                    <label for="fechaFacturacion" class="form-label">Fecha Facturación</label>
-                    <input type="date" name="fechaFacturacion" id="fechaFacturacion" class="form-control"
-                           value="<?= $contrato['fechaFacturacion'] ?>">
+                <div class="mb-2 row align-items-right">
+                    <div class="col-md-8">
+                        <label for="fechaFacturacion" class="form-label">Fecha Facturación</label>
+                        <input type="date" name="fechaFacturacion" id="fechaFacturacion" class="form-control"
+                               value="<?= $contrato['fechaFacturacion'] ?>">
+                    </div>
+
+                    <div class="col-md-1">
+                        <label class="form-label" for="chFacturado">Facturado</label>
+                        <br>
+                        <input class="form-check-input m-2" type="checkbox"
+                               style="transform: scale(1.5);"
+                               name="chFacturado" id="chFacturado"
+                               value="1" <?= $contrato['estado'] === 'Facturado' ? 'checked' : '' ?>>
+                    </div>
+
+                    <div class="col-md-1"></div>
+
+                    <div class="col-md-1">
+                        <label class="form-label" for="chCancelado">Cancelado</label>
+                        <br>
+                        <input class="form-check-input m-2" type="checkbox"
+                               style="transform: scale(1.5);"
+                               name="chCancelado" id="chCancelado"
+                               value="1" <?= $contrato['estado'] === 'Cancelado' ? 'checked' : '' ?>>
+                    </div>
                 </div>
+
 
                 <div class="mb-2">
                     <label for="cobrado" class="form-label">A cobrar</label>
@@ -232,18 +259,25 @@ $proveedores = $db->query("SELECT idProveedor, nomProv FROM proveedor ORDER BY n
                 </div>
             </div>
 
-            <!-- Notas column -->
             <div class="col-md-4">
                 <div class="mb-2">
-                    <label for="estadoContrato" class="form-label">Estado</label>
-                    <input type="text" readonly id="estadoContrato" name="estadoContrato" class="form-control"
+                    <label for="estado" class="form-label">Estado</label>
+                    <input type="text" readonly id="estado" name="estado" class="form-control"
+                           style="box-shadow: inset 0 0 10px <?= $colores[$contrato['estado']] ?>;"
                            value="<?= trim($contrato['estado']) ?>">
                 </div>
 
                 <div class="mb-2">
                     <label for="notasContrato" class="form-label">Notas</label>
-                    <textarea name="notasContrato" id="notasContrato" rows="20"
+                    <textarea name="notasContrato" id="notasContrato"
+                              rows="<?= $contrato['estado'] === 'Cancelado' ? '10' : '20' ?>"
                               class="form-control"><?= trim($contrato['notasContrato']) ?></textarea>
+
+                    <?php if ($contrato['estado'] === 'Cancelado'): ?>
+                        <label for="notasCancelacion" class="form-label mt-2">Notas Cancelación</label>
+                        <textarea name="notasCancelacion" id="notasCancelacion" rows="8"
+                                  class="form-control"><?= trim($contrato['notasCancelacion']) ?></textarea>
+                    <?php endif; ?>
                 </div>
 
             </div>
@@ -262,21 +296,137 @@ $proveedores = $db->query("SELECT idProveedor, nomProv FROM proveedor ORDER BY n
             if (!fechaActivacion.value) {
                 cobrado.value = '0.00';
             } else {
-                cobrado.value = comision.value; // example fallback
+                cobrado.value = comision.value;
             }
         });
     });
 </script>
+
+<script>
+    // Cambiar el estado del contrato en base a los campos rellenados
+    // y habilitar el check de facturacion
+    document.addEventListener('DOMContentLoaded', function () {
+        const estado = document.getElementById('estado');
+        const chFacturado = document.getElementById('chFacturado');
+
+        const fechaVenta = document.getElementById('fechaVenta');
+        const fechaActivacion = document.getElementById('fechaActivacion');
+        const fechaFacturacion = document.getElementById('fechaFacturacion');
+
+        const cobrado = document.getElementById('cobrado');
+        const comision = document.getElementById('comision');
+
+        const colores = {
+            'Vendido': '#3385ff',
+            'Activado': '#e6e600',
+            'Facturable': '#ff8000',
+            'Facturado': '#00b300',
+            'Cancelado': '#cc0000',
+            '-': '#999'
+        };
+
+        function habilitarFacturado() {
+            if (!fechaFacturacion.value) {
+                chFacturado.disabled = true;
+                chFacturado.checked = false;
+            } else {
+                chFacturado.disabled = false;
+            }
+        }
+
+        function habilitarCobrado() {
+            if (!fechaActivacion.value) {
+                cobrado.value = '0.00';
+            } else {
+                cobrado.value = comision.value;
+            }
+        }
+
+        function actualizarColor() {
+            const color = colores[estado.value.trim()] || '#999';
+            estado.style.boxShadow = `inset 0 0 10px ${color}`;
+        }
+
+        // Cambiar el estado del contrato al rellenar y borrar la fecha de activacion
+        fechaVenta.addEventListener('input', function () {
+            if (!fechaVenta.value) {
+                fechaActivacion.value = '';
+                fechaFacturacion.value = '';
+                estado.value = '-';
+            } else {
+                estado.value = 'Vendido';
+            }
+            habilitarFacturado();
+            habilitarCobrado();
+            actualizarColor();
+        });
+
+        // Cambiar el estado del contrato al rellenar y borrar la fecha de activacion
+        fechaActivacion.addEventListener('input', function () {
+            if (!fechaActivacion.value) {
+                fechaFacturacion.value = '';
+                estado.value = 'Vendido';
+            } else {
+                fechaVenta.value = fechaActivacion.value;
+                estado.value = 'Activado';
+            }
+
+            habilitarFacturado();
+            habilitarCobrado();
+            actualizarColor();
+        });
+
+        // Cambiar el estado del contrato al rellenar y borrar la fecha de facturacion
+        fechaFacturacion.addEventListener('input', function () {
+            if (!fechaFacturacion.value) {
+                estado.value = 'Activado';
+                chFacturado.checked = false;
+            } else {
+                fechaVenta.value = fechaFacturacion.value;
+                fechaActivacion.value = fechaFacturacion.value;
+
+                estado.value = 'Facturable';
+            }
+
+            habilitarFacturado();
+            habilitarCobrado();
+            actualizarColor();
+        });
+
+        chFacturado.addEventListener('input', function () {
+            if (chFacturado.checked === false) {
+                estado.value = 'Facturable';
+            } else {
+                estado.value = 'Facturado';
+            }
+
+            actualizarColor();
+        });
+
+        habilitarFacturado();
+        habilitarCobrado();
+        actualizarColor();
+    });
+</script>
+
 <script>
     // Enseñar div para añadir proveedor
     document.addEventListener('DOMContentLoaded', function () {
-        const selectProveedor = document.getElementById('idProveedor');
+        const selectProveedor = document.getElementById('selProveedor');
+        const selectProducto = document.getElementById('selProducto');
+
         const divCreador = document.getElementById('creadorProveedor');
 
         selectProveedor.addEventListener('change', function () {
             if (selectProveedor.value === '0') {
-                divCreador.style.display = 'block'; // Show it when 'Crear nuevo' selected
+                // Enseñar creador de proveedor si se selecciona "-- Crear nuevo--"
+                divCreador.style.display = 'block';
             } else {
+                // Actualizar productos que solo pertenezcan a un proveedor asociado
+                if(selectProveedor.value !== '') {
+                    // TODO: get list of productos asociados a ese proveedor through ajax and update selectProducto accordingly
+                }
+
                 divCreador.style.display = 'none'; // Hide it otherwise
             }
         });
@@ -289,9 +439,9 @@ $proveedores = $db->query("SELECT idProveedor, nomProv FROM proveedor ORDER BY n
 
         selectCliente.addEventListener('change', function () {
             if (selectCliente.value === '0') {
-                divCreador.style.display = 'block'; // Show it when 'Crear nuevo' selected
+                divCreador.style.display = 'block';
             } else {
-                divCreador.style.display = 'none'; // Hide it otherwise
+                divCreador.style.display = 'none';
             }
         });
     });
@@ -303,9 +453,9 @@ $proveedores = $db->query("SELECT idProveedor, nomProv FROM proveedor ORDER BY n
 
         selectCliente.addEventListener('change', function () {
             if (selectCliente.value === '0') {
-                divCreador.style.display = 'block'; // Show it when 'Crear nuevo' selected
+                divCreador.style.display = 'block';
             } else {
-                divCreador.style.display = 'none'; // Hide it otherwise
+                divCreador.style.display = 'none';
             }
         });
     });

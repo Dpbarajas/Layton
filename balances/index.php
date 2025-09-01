@@ -80,8 +80,24 @@ $totalGastos = 0;
     <!-- Selector de años y trimestres -->
     <div class="d-flex justify-content-between align-items-center mb-3 table-box">
         <!-- Año -->
-        <span>
-            <span class="dropdown hover-dropdown">
+        <h2>Balances</h2>
+
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <!-- Trimestres -->
+            <div class="btn-group" role="group" aria-label="Trimestres">
+                <a href="index.php?trimestre=1"
+                   class="btn btn-outline-primary <?= $trimestre === 1 ? 'active' : '' ?>">T1</a>
+                <a href="index.php?trimestre=2"
+                   class="btn btn-outline-primary <?= $trimestre === 2 ? 'active' : '' ?>">T2</a>
+                <a href="index.php?trimestre=3"
+                   class="btn btn-outline-primary <?= $trimestre === 3 ? 'active' : '' ?>">T3</a>
+                <a href="index.php?trimestre=4"
+                   class="btn btn-outline-primary <?= $trimestre === 4 ? 'active' : '' ?>">T4</a>
+                <a href="index.php?trimestre=G" class="btn btn-outline-primary <?= $trimestre === 0 ? 'active' : '' ?>">Global</a>
+            </div>
+
+
+            <div class="dropdown hover-dropdown">
                 <button class="btn btn-outline-primary dropdown-toggle"
                         id="entitiesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <span><?= $_SESSION['balances']['filtros'][':anyo'] ?></span>
@@ -94,29 +110,19 @@ $totalGastos = 0;
                         </li>
                     <?php endforeach; ?>
                 </ul>
-            </span>
-        </span>
-
-
-        <!-- Trimestres -->
-        <div class="btn-group" role="group" aria-label="Trimestres">
-            <a href="index.php?trimestre=1"
-               class="btn btn-outline-primary <?= $trimestre === 1 ? 'active' : '' ?>">T1</a>
-            <a href="index.php?trimestre=2"
-               class="btn btn-outline-primary <?= $trimestre === 2 ? 'active' : '' ?>">T2</a>
-            <a href="index.php?trimestre=3"
-               class="btn btn-outline-primary <?= $trimestre === 3 ? 'active' : '' ?>">T3</a>
-            <a href="index.php?trimestre=4"
-               class="btn btn-outline-primary <?= $trimestre === 4 ? 'active' : '' ?>">T4</a>
-            <a href="index.php?trimestre=G" class="btn btn-outline-primary <?= $trimestre === 0 ? 'active' : '' ?>">Global</a>
+            </div>
         </div>
+
+
+
+
     </div>
 
 
     <div class="table-container">
         <!-- Ingresos -->
         <div class="table-box">
-            <div class="d-flex justify-content-between align-items-center mb-3 table-box">
+            <div class="d-flex justify-content-between align-items-center mb-3 table-box ingreso">
                 <h4>Ingresos</h4>
                 <a href="/balances/ficha.php?tipoBalance=ingreso" class="btn btn-outline-success">Nuevo Ingreso</a>
             </div>
@@ -166,7 +172,7 @@ $totalGastos = 0;
 
         <!-- Gastos -->
         <div class="table-box">
-            <div class="d-flex justify-content-between align-items-center mb-3 table-box">
+            <div class="d-flex justify-content-between align-items-center mb-3 table-box gasto">
                 <h4>Gastos</h4>
                 <a href="/balances/ficha.php?tipoBalance=gasto" class="btn btn-outline-danger">Nuevo Gasto</a>
             </div>
@@ -197,7 +203,8 @@ $totalGastos = 0;
                             <td class="text-end"><?= number_format($gasIrpf, 2) . " €" ?></td>
                             <td class="text-end"><?= number_format($gasIva, 2) . " €" ?></td>
                             <td class="text-end"><?= number_format($gasTotal, 2) . " €" ?></td>
-                            <td><a href="accion.php?accion=eliminar&idBalance=<?= $gasto['idGasto'] ?>&tipoBalance=gasto"
+                            <td>
+                                <a href="accion.php?accion=eliminar&idBalance=<?= $gasto['idGasto'] ?>&tipoBalance=gasto"
                                    style="text-decoration: none;">❌</a></td>
                         </tr>
                         <?php

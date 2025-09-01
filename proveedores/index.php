@@ -12,19 +12,17 @@ function iconoOrden($columna, $actual, $direccion)
     endif;
 }
 
-if(!isset($_SESSION['proveedores']['orderBy'])) $_SESSION['proveedores']['orderBy'] = "idProveedor";
-if(!isset($_SESSION['proveedores']['order'])) $_SESSION['proveedores']['order'] = true;
+if (!isset($_SESSION['proveedores']['orderBy'])) $_SESSION['proveedores']['orderBy'] = "idProveedor";
+if (!isset($_SESSION['proveedores']['order'])) $_SESSION['proveedores']['order'] = true;
 
 $orderDirection = true;
-if(isset($_GET['orderBy'])):
+if (isset($_GET['orderBy'])):
     if ($_GET['orderBy'] !== $_SESSION['proveedores']['orderBy']):
         $_SESSION['proveedores']['orderBy'] = $_GET['orderBy'];
         $_SESSION['proveedores']['order'] = true;
     else:
         $_SESSION['proveedores']['order'] = !$_SESSION['proveedores']['order'];
     endif;
-
-    header("Location: index.php");
 endif;
 
 $orderColumn = $_SESSION['proveedores']['orderBy'];
@@ -51,7 +49,7 @@ $totalPaginas = ceil($totalProveedores / $proveedoresPorPagina);
 $pagInfo = "Del " . ($offset + 1) . " al " . min($offset + $proveedoresPorPagina, $totalProveedores) . " de " . $totalProveedores . " proveedores.";
 
 
-if (! isset($_SESSION['proveedores']['filtrosProveedor'])) $_SESSION['proveedores']['filtrosProveedor'] = [];
+if (!isset($_SESSION['proveedores']['filtros'])) $_SESSION['proveedores']['filtros'] = [];
 $where = "WHERE pv.baja = 0";
 
 
@@ -60,10 +58,10 @@ if (!empty($_POST['proveedor'])) {
     $where .= " AND UPPER(pv.nomProv) LIKE :proveedor";
 
     $proveedor = $_POST['proveedor'];
-    $_SESSION['proveedores']['filtrosProveedor'][':proveedor'] = "%" . strtoupper($proveedor) . "%";
+    $_SESSION['proveedores']['filtros'][':proveedor'] = "%" . strtoupper($proveedor) . "%";
 } else {
     $proveedor = '';
-    unset($_SESSION['proveedores']['filtrosProveedor'][':proveedor']);
+    unset($_SESSION['proveedores']['filtros'][':proveedor']);
 }
 
 
@@ -75,7 +73,7 @@ $sql = "SELECT *
 
 $stmt = $db->prepare($sql);
 
-foreach ($_SESSION['proveedores']['filtrosProveedor'] as $clave => $valor) {
+foreach ($_SESSION['proveedores']['filtros'] as $clave => $valor) {
     $stmt->bindValue($clave, $valor);
 }
 
@@ -102,33 +100,36 @@ endif;
 
 <?php include __DIR__ . "/../includes/header.php"; ?>
 
-<?php if(!empty($tipoMensaje)): ?>
+<?php if (!empty($tipoMensaje)): ?>
     <div class="alert alert-<?= $tipoMensaje ?> alert-dismissible fade show" role="alert">
         <?= $message ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 
-<h1 class="mb-4">Proveedores</h1>
+<div class="table-box d-flex justify-content-between align-items-center mb-2">
+    <h2>Proveedores</h2>
+    <a href="/proveedores/ficha.php?idProveedor=0" class="btn btn-success text-nowrap">Nuevo
+        proveedor</a>
+</div>
 
 <!-- FILTROS -->
-<form method="POST" class="row g-3 mb-4">
+<div class="table-box mb-2 pb-0">
+    <form method="POST" class="row g-3 mb-4">
 
-    <div class="col-md-4 mb-2">
-        <label for="proveedor" class="form-label">Proveedor</label>
-        <input type="text" name="proveedor" id="proveedor" class="form-control" value="<?= $proveedor ?>">
-    </div>
+        <div class="col-md-3 mb-2">
+            <label for="proveedor" class="form-label">Proveedor</label>
+            <input type="text" name="proveedor" id="proveedor" class="form-control" value="<?= $proveedor ?>">
+        </div>
 
-    <div class="col-md-4">
-    </div>
+        <div class="col-md-7"></div>
 
-    <div class="col-md-4 d-flex align-items-end gap-2 mb-2">
-        <button type="submit" class="btn btn-outline-primary flex-fill">Filtrar</button>
-        <a href="index.php" class="btn btn-outline-danger flex-fill">Reset</a>
-        <a href="/proveedores/ficha.php?idProveedor=0" class="flex-fill btn btn-success text-nowrap">Nuevo proveedor</a>
-    </div>
-</form>
-
+        <div class="col-md-2 d-flex align-items-end gap-2 mb-2">
+            <button type="submit" class="flex-fill btn btn-outline-primary">Filtrar</button>
+            <a href="index.php" class="flex-fill btn btn-outline-danger">Reset</a>
+        </div>
+    </form>
+</div>
 
 <!-- LISTADO -->
 <table class="table table-bordered table-striped table-hover align-middle">

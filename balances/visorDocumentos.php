@@ -23,51 +23,70 @@ $idDocumento = $documentos[0]['idDocumento'] ?? 0;
     <link rel="stylesheet" href="/../assets/styles.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/x-icon" href="/assets/img/icono.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body class="bg-light">
 
 <div class="container-xxl">
 
-    <div style="min-height: 95vh;" class="table-box d-flex justify-content-between">
 
-        <div class="table-box me-2" style="overflow-y: scroll; width: 500px; flex: 0.5; height: 95vh;">
-            <ul class="list-group">
-                <?php foreach ($documentos as $doc):
-                    ?>
-                    <li class="list-group-item doc-btn d-flex justify-content-between align-items-center"
-                        data-path="<?= htmlspecialchars($doc['rutaArchivo']) ?>"
-                        id="<?= $doc['idDocumento'] ?>">
+    <?php if (empty($documentos)): ?>
 
-                        <div class="text-truncate flex-grow-1 me-3">
-                            <input type="text" readonly class="form-control-plaintext text-truncate nombres"
-                                   value="<?= htmlspecialchars($doc['nombreArchivo']) ?>">
-                        </div>
-
-                        <div class="btn-group btn-group-sm flex-shrink-0" role="group" aria-label="Acciones documento">
-                            <button data-id="<?= htmlspecialchars($doc['idDocumento']) ?>" class="btn btn-success cambiar-nombre">
-                                <img src="/assets/img/edit.svg" alt="Editar">
-                            </button>
-                            <button data-id="<?= htmlspecialchars($doc['idDocumento']) ?>" class="btn btn-danger eliminar-documento">
-                                <img src="/assets/img/delete.svg" alt="Eliminar">
-                            </button>
-                        </div>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
+        <div class="d-flex flex-column align-items-center justify-content-center text-center" style="height: 100%">
+            <img style="red" src="/assets/img/empty-file.svg">
+            <h4 class="mt-4 text-muted">No se han subido documentos aún</h4>
+            <p class="text-secondary">Sube tus archivos para que aparezcan aquí.</p>
         </div>
 
-        <!-- Visor -->
-        <div style="flex: 1; height: 95vh; padding-left: 1rem;" class="table-box">
-            <img id="viewer-img"
-                 src=""
-                 style="width: 100%; height: 100%; object-fit: contain; display: none;">
-            <iframe id="viewer-pdf"
-                    src=""
-                    style="width: 100%; height: 100%; display: none;"></iframe>
+    <?php else: ?>
+
+        <div style="min-height: 95vh;" class="table-box d-flex justify-content-between">
+
+            <div class="table-box me-2" style="overflow-y: scroll; width: 500px; flex: 0.5; height: 95vh;">
+                <ul class="list-group">
+                    <?php foreach ($documentos as $doc):
+                        ?>
+                        <li class="list-group-item doc-btn d-flex justify-content-between align-items-center"
+                            data-path="<?= htmlspecialchars($doc['rutaArchivo']) ?>"
+                            id="<?= $doc['idDocumento'] ?>">
+
+                            <div class="text-truncate flex-grow-1 me-3">
+                                <input type="text" readonly class="form-control-plaintext text-truncate nombres"
+                                       value="<?= htmlspecialchars($doc['nombreArchivo']) ?>">
+                            </div>
+
+                            <div class="btn-group btn-group-sm flex-shrink-0" role="group"
+                                 aria-label="Acciones documento">
+                                <button data-id="<?= htmlspecialchars($doc['idDocumento']) ?>"
+                                        class="btn btn-success cambiar-nombre">
+                                    <img src="/assets/img/edit.svg" alt="Editar">
+                                </button>
+                                <button data-id="<?= htmlspecialchars($doc['idDocumento']) ?>"
+                                        class="btn btn-danger eliminar-documento">
+                                    <img src="/assets/img/delete-file.svg" alt="Eliminar">
+                                </button>
+                            </div>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+
+            <!-- Visor -->
+            <div style="flex: 1; height: 95vh; padding-left: 1rem;" class="table-box">
+                <img id="viewer-img"
+                     src=""
+                     style="width: 100%; height: 100%; object-fit: contain; display: none;">
+                <iframe id="viewer-pdf"
+                        src=""
+                        style="width: 100%; height: 100%; display: none;"></iframe>
+            </div>
+
         </div>
 
-    </div>
+    <?php endif; ?>
 
     <?php include '../includes/footer.php' ?>
 
@@ -81,7 +100,7 @@ $idDocumento = $documentos[0]['idDocumento'] ?? 0;
 
                 $buttons.on('click', function () {
 
-                    if($(this).hasClass('active')) {
+                    if ($(this).hasClass('active')) {
                         return;
                     }
 
@@ -126,6 +145,7 @@ $idDocumento = $documentos[0]['idDocumento'] ?? 0;
                     .done(function (respuesta) {
                         if (respuesta.trim() === 'ok') {
                             $btn.closest('li').remove();
+                            $('.doc-btn').first().click();
                         } else {
                             alert('Error al eliminar: ' + respuesta);
                         }
@@ -196,7 +216,8 @@ $idDocumento = $documentos[0]['idDocumento'] ?? 0;
                             nombre: nuevoNombre
                         })
                             .done(function (respuesta) {
-                                console.log(respuesta); debugger;
+                                console.log(respuesta);
+                                debugger;
                                 if (respuesta.trim() === 'ok') {
                                     // Cambiar la ruta del documento en el DOM
                                     const partesRuta = rutaOriginal.split('/');

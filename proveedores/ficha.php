@@ -40,20 +40,21 @@ if ($modoEdicion) {
 
 <?php include '../includes/header.php'; ?>
 
-<form method="POST" action="accion.php" class="mt-3">
+<form method="POST" action="accion.php" class="mt-0">
     <input type="hidden" id="accion" name="accion" value="<?= $modoEdicion ? "editar" : "crear" ?>">
     <input type="hidden" name="origen" value="<?= $origen ?>">
 
     <div class="container">
-        <h2><?= $modoEdicion ? 'Editar Proveedor' : 'Nuevo Proveedor' ?></h2>
+        <div class="table-box mb-2 row">
+            <h2 class="mb-0"><?= $modoEdicion ? 'Editar Proveedor' : 'Nuevo Proveedor' ?></h2>
+        </div>
 
         <input type="hidden" readonly name="idProveedor" id="idProveedor" value="<?= $idProveedor ?>">
 
-        <div class="row">
+        <div class="table-box row">
             <!-- Main form fields -->
-            <div class="col-md-8">
                 <div class="mb-2">
-                    <label for="nomProv" class="form-label">Nombre Proveedor</label>
+                    <label for="nomProv" class="form-label requerido">Nombre Proveedor</label>
                     <input type="text" id="nomProv" name="nomProv" class="form-control" value="<?= $proveedor['nomProv'] ?>" required>
                 </div>
 
@@ -79,7 +80,6 @@ if ($modoEdicion) {
                     <a href="<?= $origen ?>" class="btn btn-secondary">Volver</a>
                     <button type="submit" class="btn btn-primary"><?= $modoEdicion ? 'Guardar Cambios' : 'Crear Proveedor' ?></button>
                 </div>
-            </div>
 
         </div>
     </div>

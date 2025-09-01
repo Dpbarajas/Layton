@@ -44,12 +44,22 @@ if ($modoEdicion) {
     }
 }
 
+// Obtener el total de documentos asociados con este balance
+$stmt = $db->prepare("
+    SELECT COUNT(*) as total
+    FROM documento
+    WHERE (idBalance = ? AND tipoBalance = ?)
+");
+$stmt->execute([$idBalance, $tipoBalance]);
+$documentos = $stmt->fetch(PDO::FETCH_ASSOC);
+
+
 ?>
 
 
 <?php include '../includes/header.php'; ?>
 
-<form id="formBalance" method="POST" enctype="multipart/form-data" action="accion.php" class="mt-3">
+<form id="formBalance" method="POST" enctype="multipart/form-data" action="accion.php" class="mt-0">
     <input type="hidden" id="accion" name="accion" value="<?= $modoEdicion ? "editar" : "crear" ?>">
 
     <input type="hidden" id="origen" name="origen" value="<?= $origen ?>">
@@ -73,20 +83,20 @@ if ($modoEdicion) {
             <!-- Main form fields -->
             <div class="col-md-6">
                 <div class="mb-2">
-                    <label for="empresa" class="form-label">Empresa</label>
+                    <label for="empresa" class="form-label requerido">Empresa</label>
                     <input type="text" required id="empresa" name="empresa" class="form-control"
                            value="<?= trim($balance['empresa']) ?>">
                 </div>
 
                 <div class="mb-2">
-                    <label for="fecha" class="form-label">Fecha de realización</label>
+                    <label for="fecha" class="form-label requerido">Fecha de realización</label>
                     <input type="date" name="fecha" id="fecha" class="form-control"
                            value="<?= $balance['fecha'] ?>" required>
                 </div>
 
 
                 <div class="mb-2">
-                    <label for="baseImponible" class="form-label">Base Imponible</label>
+                    <label for="baseImponible" class="form-label requerido">Base Imponible</label>
                     <input type="text" step="0.5" name="baseImponible" id="baseImponible"
                            class="form-control dinero"
                            value="<?= sprintf("%.2f", $balance['baseImponible']) ?>€" required>
@@ -94,7 +104,7 @@ if ($modoEdicion) {
 
                 <div class="row mb-4">
                     <div class="col-md-2">
-                        <label for="iva-perc" class="form-label">IVA (%)</label>
+                        <label for="iva-perc" class="form-label requerido">IVA (%)</label>
                         <input type="number" step=0.01 name="iva-perc" id="iva-perc" class="form-control"
                                value="<?= $balance['iva'] ?? 21.00 ?>" required>
                     </div>
@@ -108,7 +118,7 @@ if ($modoEdicion) {
                     <div class="col-md-2"></div>
 
                     <div class="col-md-2">
-                        <label for="irpf-perc" class="form-label">IRPF (%)</label>
+                        <label for="irpf-perc" class="form-label requerido">IRPF (%)</label>
                         <input type="number" step="0.01" name="irpf-perc" id="irpf-perc" class="form-control"
                                value="<?= $balance['irpf'] ?>" required>
                     </div>
@@ -121,7 +131,7 @@ if ($modoEdicion) {
                 </div>
 
                 <div class="mb-3">
-                    <label for="total" class="form-label">Total</label>
+                    <label for="total" class="form-label requerido">Total</label>
                     <input type="text" step="0.01" name="total" id="total"
                            class="form-control readonly dinero"
                            value="<?= sprintf("%.2f", $balance['baseImponible'] +
@@ -142,10 +152,10 @@ if ($modoEdicion) {
             <!-- Columna para subir documentos -->
             <div class="col-md-5">
                 <div class="d-flex justify-content-between align-items-center">
-                    <label class="form-label">Adjuntar Documentos</label>
+                    <label class="form-label">Adjuntar Documentos (<?= $documentos['total'] ?>)</label>
 
-                    <button type="button" class="btn btn-outline-primary p-0 border-0" id="btnVerArchivos" data-bs-toggle="modal" data-bs-target="#visorDocumentosModal">
-                        <img src="/assets/img/attachments.svg">
+                    <button type="button" <?= $documentos['total'] > 0 ? '' : 'disabled' ?> class="btn btn-outline-primary p-0 border-0" id="btnVerArchivos" data-bs-toggle="modal" data-bs-target="#visorDocumentosModal">
+                        <img src=<?= $documentos['total'] > 0 ? '/assets/img/attachments.svg' : '/assets/img/no-attachments.svg' ?>>
                     </button>
                 </div>
                 <div>
@@ -168,7 +178,7 @@ if ($modoEdicion) {
         </div>
 </form>
 
-<!-- Modal -->
+<!-- Modal para documentos -->
 <div class="modal fade" id="visorDocumentosModal" tabindex="-1" aria-labelledby="visorDocumentosModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable modal-fullscreen-md-down">
         <!-- XL en desktop, fullscreen en pantallas medianas y menores -->
@@ -251,9 +261,8 @@ if ($modoEdicion) {
     document.getElementById('btnVerArchivos').addEventListener('click', function() {
         const iframe = document.getElementById('iframeVisor');
 
-        // Ejemplo: pasa tu ID dinámico
-        const idBalance = <?= (int)$_GET['idBalance'] ?>; // O donde tengas el ID
-        const tipoBalance = "<?= $tipoBalance ?>"; // Por si lo necesitas
+        const idBalance = <?= (int)$_GET['idBalance'] ?>;
+        const tipoBalance = "<?= $tipoBalance ?>";
 
         iframe.src = `visorDocumentos.php?tipoBalance=${tipoBalance}&idBalance=${idBalance}`;
     });

@@ -56,7 +56,7 @@ endif;
     </div>
 <?php endif; ?>
 
-<form id="formProductos" method="POST" action="accion.php" class="mt-3">
+<form id="formProductos" method="POST" action="accion.php" class="mt-0">
     <input type="hidden" id="accion" name="accion" value="<?= $modoEdicion ? "editar" : "crear" ?>">
     <input type="hidden" id="accionOriginal" name="accionOriginal" value="<?= $modoEdicion ? "editar" : "crear" ?>">
 
@@ -64,20 +64,22 @@ endif;
     <input type="hidden" id="origenOriginal" name="origenOriginal" value="<?= $origen ?>">
 
     <div class="container">
-        <h2><?= $modoEdicion ? 'Editar Producto' : 'Nuevo Producto' ?></h2>
+        <div class="table-box mb-2 row">
+            <h2 class="mb-0"><?= $modoEdicion ? 'Editar Producto' : 'Nuevo Producto' ?></h2>
+        </div>
 
         <input type="hidden" readonly name="idProducto" id="idProducto" value="<?= $idProducto ?>">
 
-        <div class="row">
+        <div class="table-box row">
             <!-- Main form fields -->
             <div class="col-md-8">
                 <div class="mb-4">
-                    <label for="nomProd" class="form-label">Nombre Producto</label>
+                    <label for="nomProd" class="form-label requerido">Nombre Producto</label>
                     <input type="text" id="nomProd" name="nomProd" class="form-control" value="<?= $producto['nomProd'] ?>" required>
                 </div>
 
                 <div class="mb-4">
-                    <label for="proveedor" class="form-label">Proveedor</label>
+                    <label for="proveedor" class="form-label requerido">Proveedor</label>
                     <select name="proveedor" id="proveedor" class="form-select" required>
                         <option value="">-- Selecciona un proveedor --</option>
                         <option value="" disabled></option>
@@ -110,7 +112,7 @@ endif;
                 </div>
 
                 <div class="mb-4">
-                    <label for="retrocomision" class="form-label">Tipo de Retrocomision</label>
+                    <label for="retrocomision" class="form-label requerido">Tipo de Retrocomision</label>
 
                     <select name="retrocomision" id="retrocomision" class="form-select mb-2" required>
                         <option value="dia" <?= $producto['retrocomision'] === "dia" ? 'selected' : '' ?>>Por día</option>
