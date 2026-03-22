@@ -11,12 +11,12 @@ $success = false;
 try {
     switch ($action) {
         case 'crear':
-            $stmt = $db->prepare("INSERT INTO proveedor (nomProv, telefono, web) 
-                              VALUES (:nomProv, :telefono, :web)");
+            $stmt = $db->prepare("INSERT INTO proveedor (nombreProveedor, telefonoProveedor, web) 
+                              VALUES (:nombreProveedor, :telefonoProveedor, :web)");
 
             $success = $stmt->execute([
-                ':nomProv' => $_POST['nomProv'],
-                ':telefono' => $_POST['telefono'],
+                ':nombreProveedor' => $_POST['nombreProveedor'],
+                ':telefonoProveedor' => $_POST['telefonoProveedor'],
                 ':web' => $_POST['web']
             ]);
 
@@ -34,14 +34,14 @@ try {
         case 'editar':
 
             $stmt = $db->prepare("UPDATE proveedor 
-                              SET nomProv = :nomProv,
-                                  telefono = :telefono,
+                              SET nombreProveedor = :nombreProveedor,
+                                  telefonoProveedor = :telefonoProveedor,
                                   web = :web
                               WHERE idProveedor = :id");
 
             $success = $stmt->execute([
-                ':nomProv' => $_POST['nomProv'],
-                ':telefono' => $_POST['telefono'],
+                ':nombreProveedor' => $_POST['nombreProveedor'],
+                ':telefonoProveedor' => $_POST['telefonoProveedor'],
                 ':web' => $_POST['web'],
                 ':id' => $_POST['idProveedor']
             ]);

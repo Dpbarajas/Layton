@@ -54,19 +54,19 @@ $where = "WHERE p.baja = 0";
 
 
 // Nombre Producto
-if (!empty($_POST['nomProd'])) {
-    $where .= " AND UPPER(p.nomProd) LIKE :nomProd";
+if (!empty($_POST['nombreProveedor'])) {
+    $where .= " AND UPPER(p.nombreProveedor) LIKE :nombreProveedor";
 
-    $nomProducto = $_POST['nomProd'];
-    $_SESSION['productos']['filtros'][':nomProd'] = "%" . strtoupper($nomProducto) . "%";
+    $nomProducto = $_POST['nombreProveedor'];
+    $_SESSION['productos']['filtros'][':nombreProveedor'] = "%" . strtoupper($nomProducto) . "%";
 } else {
     $nomProducto = '';
-    unset($_SESSION['productos']['filtros'][':nomProd']);
+    unset($_SESSION['productos']['filtros'][':nombreProveedor']);
 }
 
 // Proveedor
 if (!empty($_POST['proveedor'])) {
-    $where .= " AND UPPER(pv.nomProv) LIKE :proveedor";
+    $where .= " AND UPPER(pv.nombreProveedor) LIKE :proveedor";
 
     $proveedor = $_POST['proveedor'];
     $_SESSION['productos']['filtros'][':proveedor'] = "%" . strtoupper($proveedor) . "%";
@@ -75,37 +75,37 @@ if (!empty($_POST['proveedor'])) {
     unset($_SESSION['productos']['filtros'][':proveedor']);
 }
 
-if (!empty($_POST['retrocomision'])) {
-    if ($_POST['retrocomision'] != 'null') {
-        $where .= " AND p.retrocomision = :retrocomision";
+if (!empty($_POST['tipoRetrocomision'])) {
+    if ($_POST['tipoRetrocomision'] != 'null') {
+        $where .= " AND p.tipoRetrocomision = :tipoRetrocomision";
 
-        $retrocomision = $_POST['retrocomision'];
-        $_SESSION['productos']['filtros'][':retrocomision'] = $retrocomision;
+        $retrocomision = $_POST['tipoRetrocomision'];
+        $_SESSION['productos']['filtros'][':tipoRetrocomision'] = $retrocomision;
     } else {
-        $where .= " AND p.retrocomision IS NULL";
+        $where .= " AND p.tipoRetrocomision IS NULL";
 
         $retrocomision = "null";
-        unset($_SESSION['productos']['filtros'][':retrocomision']);
+        unset($_SESSION['productos']['filtros'][':tipoRetrocomision']);
     }
 } else {
     $retrocomision = '';
-    unset($_SESSION['productos']['filtros'][':retrocomision']);
+    unset($_SESSION['productos']['filtros'][':tipoRetrocomision']);
 }
 
 // Notas
-if (!empty($_POST['notasProd'])) {
-    $where .= " AND UPPER(p.proveedor) LIKE :notasProd";
+if (!empty($_POST['notasProducto'])) {
+    $where .= " AND UPPER(p.proveedor) LIKE :notasProducto";
 
-    $notasProd = $_POST['notasProd'];
-    $_SESSION['productos']['filtros'][':notasProd'] = "%" . strtoupper($notasProd) . "%";
+    $notasProd = $_POST['notasProducto'];
+    $_SESSION['productos']['filtros'][':notasProducto'] = "%" . strtoupper($notasProd) . "%";
 } else {
     $notasProd = '';
-    unset($_SESSION['productos']['filtros'][':notasProd']);
+    unset($_SESSION['productos']['filtros'][':notasProducto']);
 }
 
 
 // Obtener clientes para la página actual
-$sql = "SELECT p.*, pv.nomProv 
+$sql = "SELECT p.*, pv.nombreProveedor 
         FROM producto p 
             INNER JOIN proveedor pv on p.proveedor = pv.idProveedor
         $where ORDER BY $orderColumn $orderDirection 
@@ -157,8 +157,8 @@ endif;
 <div class="table-box mb-2 pb-0">
     <form method="POST" class="row g-3 mb-4">
         <div class="col-md-2">
-            <label for="nomProd" class="form-label">Producto</label>
-            <input type="text" name="nomProd" id="nomProd" class="form-control" value="<?= $nomProducto ?>">
+            <label for="nombreProveedor" class="form-label">Producto</label>
+            <input type="text" name="nombreProveedor" id="nombreProveedor" class="form-control" value="<?= $nomProducto ?>">
         </div>
 
         <div class="col-md-2">
@@ -169,8 +169,8 @@ endif;
         <div class="col-md-1"></div>
 
         <div class="col-md-2">
-            <label for="retrocomision" class="form-label">Retrocomision</label>
-            <select name="retrocomision" id="retrocomision" class="form-select mb-2">
+            <label for="tipoRetrocomision" class="form-label">tipoRetrocomision</label>
+            <select name="tipoRetrocomision" id="tipoRetrocomision" class="form-select mb-2">
                 <option value="" <?= $retrocomision === "" ? "selected" : "" ?> >Todas</option>
                 <option value="dia" <?= $retrocomision === "dia" ? "selected" : "" ?> >Día</option>
                 <option value="mes" <?= $retrocomision === "mes" ? "selected" : "" ?> >Mes</option>
@@ -180,8 +180,8 @@ endif;
 
 
         <div class="col-md-2">
-            <label for="notasProd" class="form-label">Notas</label>
-            <input type="text" name="notasProd" id="notasProd" class="form-control" value="<?= $notasProd ?>"
+            <label for="notasProducto" class="form-label">Notas</label>
+            <input type="text" name="notasProducto" id="notasProducto" class="form-control" value="<?= $notasProd ?>"
             step="0.5">
         </div>
 
@@ -199,43 +199,49 @@ endif;
     <thead class="table-primary">
     <tr>
         <th class="text-nowrap">
-            <a href="index.php?orderBy=nomProd"
+            <a href="index.php?orderBy=nombreProveedor"
                class="link-secondary link-offset-2 link-underline-opacity-50 link-underline-opacity-100-hover">
                 Nombre Producto
             </a>
-            <?= iconoOrden("nomProd", $orderColumn, $orderDirection) ?>
+            <?= iconoOrden("nombreProveedor", $orderColumn, $orderDirection) ?>
         </th>
         <th class="text-nowrap">
-            <a href="index.php?orderBy=nomProv"
+            <a href="index.php?orderBy=nombreProveedor"
                class="link-secondary link-offset-2 link-underline-opacity-50 link-underline-opacity-100-hover">
                 Proveedor
             </a>
-            <?= iconoOrden("nomProv", $orderColumn, $orderDirection) ?>
+            <?= iconoOrden("nombreProveedor", $orderColumn, $orderDirection) ?>
         </th>
-        <th class="text-nowrap"><span class="opacity-50">Retrocomision</span></th>
+        <th class="text-nowrap"><span class="opacity-50">tipoRetrocomision</span></th>
         <th class="text-nowrap"><span class="opacity-50">Notas</span></th>
         <th class="text-nowrap"></th>
     </tr>
     </thead>
     <tbody>
-    <?php foreach ($productos as $producto): ?>
+    <?php if(count($productos) > 0):
+        foreach ($productos as $producto): ?>
+            <tr>
+                <td style="border-right: none">
+                    <a href="/productos/ficha.php?idProducto=<?= $producto['idProducto'] ?>"
+                       class="link-dark"><?= $producto['nombreProveedor'] ?></a>
+                </td>
+                <td>
+                    <a href="/proveedores/ficha.php?origen=/productos/index.php&idProveedor=<?= $producto['proveedor'] ?>"
+                       class="link-dark"><?= $producto['nombreProveedor'] ?></a></td>
+                <td><?= $producto['tipoRetrocomision'] ?? 'Sin R.C asignada' ?></td>
+                <td><?= $producto['notasProducto'] ?></td>
+                <td class="text-center delete">
+                    <a href="/productos/accion.php?accion=eliminar&idProducto=<?= $producto['idProducto'] ?>">
+                        ❌
+                    </a>
+                </td>
+            </tr>
+        <?php endforeach;
+    else: ?>
         <tr>
-            <td style="border-right: none">
-                <a href="/productos/ficha.php?idProducto=<?= $producto['idProducto'] ?>"
-                   class="link-dark"><?= $producto['nomProd'] ?></a>
-            </td>
-            <td>
-                <a href="/proveedores/ficha.php?origen=/productos/index.php&idProveedor=<?= $producto['proveedor'] ?>"
-                   class="link-dark"><?= $producto['nomProv'] ?></a></td>
-            <td><?= $producto['retrocomision'] ?? 'Sin R.C asignada' ?></td>
-            <td><?= $producto['notasProd'] ?></td>
-            <td class="text-center delete">
-                <a href="/productos/accion.php?accion=eliminar&idProducto=<?= $producto['idProducto'] ?>">
-                    ❌
-                </a>
-            </td>
+            <td class="text-center text-secondary" colspan="5">No hay productos disponibles</td>
         </tr>
-    <?php endforeach; ?>
+    <?php endif; ?>
     </tbody>
 </table>
 

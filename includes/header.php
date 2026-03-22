@@ -11,6 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
@@ -49,7 +50,7 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link<?= strpos($_SERVER['REQUEST_URI'], '/balances') !== false ? ' active' : '' ?>" href="/balances/index.php">Balance</a>
+                    <a class="nav-link<?= strpos($_SERVER['REQUEST_URI'], '/balances') !== false ? ' active' : '' ?>" href="/balances/index.php">Balances</a>
                 </li>
             </ul>
         </div>

@@ -15,10 +15,10 @@ $modoEdicion = $idProducto !== 0;
 
 // Variables iniciales
 $producto = [
-    'nomProd' => '',
-    'retrocomision' => '',
+    'nombreProveedor' => '',
+    'tipoRetrocomision' => '',
     'proveedor' => $_SESSION['productos']['idProveedorCreado'] ?? '',
-    'notasProd' => ''
+    'notasProducto' => ''
 ];
 unset($_SESSION['productos']['idProveedorCreado']);
 
@@ -38,7 +38,7 @@ if ($modoEdicion) {
 }
 
 // Obtener listas de clientes, productos y proveedores para los selects
-$proveedores = $db->query("SELECT idProveedor, nomProv FROM proveedor ORDER BY nomProv")->fetchAll(PDO::FETCH_ASSOC);
+$proveedores = $db->query("SELECT idProveedor, nombreProveedor FROM proveedor ORDER BY nombreProveedor")->fetchAll(PDO::FETCH_ASSOC);
 
 if (isset($_SESSION['errorMessage'])):
     $tipoMensaje = 'danger';
@@ -74,8 +74,8 @@ endif;
             <!-- Main form fields -->
             <div class="col-md-8">
                 <div class="mb-4">
-                    <label for="nomProd" class="form-label requerido">Nombre Producto</label>
-                    <input type="text" id="nomProd" name="nomProd" class="form-control" value="<?= $producto['nomProd'] ?>" required>
+                    <label for="nombreProveedor" class="form-label requerido">Nombre Producto</label>
+                    <input type="text" id="nombreProveedor" name="nombreProveedor" class="form-control" value="<?= $producto['nombreProveedor'] ?>" required>
                 </div>
 
                 <div class="mb-4">
@@ -85,7 +85,7 @@ endif;
                         <option value="" disabled></option>
                         <?php foreach ($proveedores as $proveedor): ?>
                             <option value="<?= $proveedor['idProveedor'] ?>" <?= $proveedor['idProveedor'] == $producto['proveedor'] ? 'selected' : '' ?>>
-                                <?= $proveedor['nomProv'] ?>
+                                <?= $proveedor['nombreProveedor'] ?>
                             </option>
                         <?php endforeach; ?>
                         <option value="" disabled></option>
@@ -98,11 +98,11 @@ endif;
                     <div class="row d-flex justify-content-between align-items-center">
                         <h4 class="mb-0" style="width: 50%">Crear Proveedor</h4>
 
-                        <button id="crearProveedor" type="submit" onclick="changeAction('formProductos', '/proveedores/accion.php', 'crear', '<?= $_SERVER['REQUEST_URI'] ?>', ['nomProd'], ['nomProd', 'comision'])" style="width:10%" class="btn btn-outline-success mt-2 me-4">Crear</button>
+                        <button id="crearProveedor" type="submit" onclick="changeAction('formProductos', '/proveedores/accion.php', 'crear', '<?= $_SERVER['REQUEST_URI'] ?>', ['nombreProveedor'], ['nombreProveedor', 'comision'])" style="width:10%" class="btn btn-outline-success mt-2 me-4">Crear</button>
                     </div>
 
-                    <label for="nomProv" class="form-label">Nombre Proveedor</label>
-                    <input type="text" id="nomProv" name="nomProv" class="form-control proveedorInputs">
+                    <label for="nombreProveedor" class="form-label">Nombre Proveedor</label>
+                    <input type="text" id="nombreProveedor" name="nombreProveedor" class="form-control proveedorInputs">
 
                     <label for="telefono" class="form-label mt-2">Teléfono</label>
                     <input type="number" id="telefono" name="telefono" class="form-control proveedorInputs">
@@ -112,25 +112,25 @@ endif;
                 </div>
 
                 <div class="mb-4">
-                    <label for="retrocomision" class="form-label requerido">Tipo de Retrocomision</label>
+                    <label for="tipoRetrocomision" class="form-label requerido">Tipo de tipoRetrocomision</label>
 
-                    <select name="retrocomision" id="retrocomision" class="form-select mb-2" required>
-                        <option value="dia" <?= $producto['retrocomision'] === "dia" ? 'selected' : '' ?>>Por día</option>
-                        <option value="mes" <?= $producto['retrocomision'] === "mes" ? 'selected' : '' ?>>Por mes</option>
-                        <option value="" <?= empty($producto['retrocomision']) ? 'selected' : '' ?>>Sin R.C. asignada</option>
+                    <select name="tipoRetrocomision" id="tipoRetrocomision" class="form-select mb-2" required>
+                        <option value="dia" <?= $producto['tipoRetrocomision'] === "dia" ? 'selected' : '' ?>>Por día</option>
+                        <option value="mes" <?= $producto['tipoRetrocomision'] === "mes" ? 'selected' : '' ?>>Por mes</option>
+                        <option value="" <?= empty($producto['tipoRetrocomision']) ? 'selected' : '' ?>>Sin R.C. asignada</option>
                     </select>
                 </div>
 
                 <div class="d-flex justify-content-between mt-5">
                     <a href="<?= $origen ?>" class="btn btn-secondary">Volver</a>
-                    <button id="submitButton" type="submit" onclick="changeAction('formProductos', '/productos/accion.php', null, null, ['nomProd', 'comision', 'proveedor'], [])" class="btn btn-primary"><?= $modoEdicion ? 'Guardar Cambios' : 'Crear Producto' ?></button>
+                    <button id="submitButton" type="submit" onclick="changeAction('formProductos', '/productos/accion.php', null, null, ['nombreProveedor', 'comision', 'proveedor'], [])" class="btn btn-primary"><?= $modoEdicion ? 'Guardar Cambios' : 'Crear Producto' ?></button>
                 </div>
             </div>
 
             <!-- Columna de notas  -->
             <div class="col-md-4">
-                <label for="notasProd" class="form-label">Notas</label>
-                <textarea name="notasProd" id="notasProd" rows="12" class="form-control"><?= trim($producto['notasProd'] ?? ' ') ?></textarea>
+                <label for="notasProducto" class="form-label">Notas</label>
+                <textarea name="notasProducto" id="notasProducto" rows="12" class="form-control"><?= trim($producto['notasProducto'] ?? ' ') ?></textarea>
             </div>
         </div>
     </div>

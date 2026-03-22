@@ -13,7 +13,7 @@ $idBalance = isset($_GET['idBalance']) ? (int)$_GET['idBalance'] : 0;
 $tipoBalance = isset($_GET['tipoBalance']) ? $_GET['tipoBalance'] : null;
 
 if (is_null($tipoBalance)) {
-    die("Error tipo balance");
+    die("Error del tipo de balance");
 }
 
 $nombreId = "id" . ucfirst(strtolower($tipoBalance));

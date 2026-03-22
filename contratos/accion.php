@@ -29,8 +29,8 @@ $success = false;
 try {
     switch ($accion) {
         case 'crear':
-            $stmt = $db->prepare("INSERT INTO CONTRATO (cliente, comision, producto, fechaVenta, fechaActivacion, fechaFacturacion, estado, estadoPrevio, notasContrato) 
-                              VALUES (:cliente, :comision, :producto, :fechaVenta, :fechaActivacion, :fechaFacturacion, :estado, :estadoPrevio, :notasContrato)");
+            $stmt = $db->prepare("INSERT INTO CONTRATO (cliente, comision, producto, fechaVenta, fechaActivacion, fechaFacturacion, estado, estadoPrevio, notasContrato, notasCancelacion) 
+                              VALUES (:cliente, :comision, :producto, :fechaVenta, :fechaActivacion, :fechaFacturacion, :estado, :estadoPrevio, :notasContrato, :notasCancelacion)");
 
             $success = $stmt->execute([
                 ':cliente' => $_POST['idCliente'],
@@ -42,6 +42,7 @@ try {
                 ':estado' => $_POST['estado'],
                 ':estadoPrevio' => $_POST['estado'],
                 ':notasContrato' => $_POST['notasContrato'],
+                ':notasCancelacion' => $_POST['notasCancelacion'] ?? null,
             ]);
 
             $infoMessage = "Contrato creado correctamente";
@@ -59,7 +60,8 @@ try {
                                   fechaFacturacion = :fechaFacturacion,
                                   estado = :estado,
                                   estadoPrevio = estado,
-                                  notasContrato = :notasContrato
+                                  notasContrato = :notasContrato,
+                                  notasCancelacion = :notasCancelacion
                               WHERE idContrato = :id");
 
             $success = $stmt->execute([
@@ -71,6 +73,7 @@ try {
                 ':fechaFacturacion' => empty($_POST['fechaFacturacion']) ? null : $_POST['fechaFacturacion'],
                 ':estado' => $_POST['estado'],
                 ':notasContrato' => $_POST['notasContrato'],
+                ':notasCancelacion' => $_POST['notasCancelacion'],
                 ':id' => $_POST['idContrato']
             ]);
 
@@ -122,7 +125,6 @@ try {
             $success = $stmt->execute([
                 ':id' => $_GET['idContrato']
             ]);
-            // TODO: añadir retrocomisiones
 
             $infoMessage = "Contrato desactivado correctamente";
             $errorMessage = "Hubo un problema al desactivar el contrato";
@@ -136,20 +138,20 @@ try {
                 break;
             }
 
-            $stmt = $db->prepare("UPDATE contrato SET fechaFacturacion = :fechaFacturacion, estado = 'Facturable', estadoPrevio = estado WHERE idContrato = :id");
+            $stmt = $db->prepare("UPDATE contrato SET fechaFacturacion = :fechaFacturacion, estado = 'Facturado', estadoPrevio = estado WHERE idContrato = :id");
 
             $success = $stmt->execute([
                 ':fechaFacturacion' => date("Y-m-d"),
                 ':id' => $_GET['idContrato']
             ]);
 
-            $infoMessage = "Contrato convertido en facturable correctamente";
+            $infoMessage = "Contrato facturado correctamente";
             $errorMessage = "Hubo un problema al guardar la fecha de facturación del contrato";
 
             break;
 
         case 'desfacturar':
-            if (!comprobarEstado($contrato, ['Facturable'])) {
+            if (!comprobarEstado($contrato, ['Facturado'])) {
                 $errorMessage = "El contrato no se puede desfacturar si está en estado " . $contrato['estado'];
 
                 break;
@@ -160,56 +162,22 @@ try {
             $success = $stmt->execute([
                 ':id' => $_GET['idContrato']
             ]);
-            // TODO: añadir retrocomisiones
 
             $infoMessage = "Contrato desfacturado correctamente";
             $errorMessage = "Hubo un problema al desfacturar el contrato";
 
             break;
 
-
-        case 'pagar':
-            if (!comprobarEstado($contrato, ['Facturable'])) {
-                $errorMessage = "El contrato no se puede marcar como pagado si está en estado " . $contrato['estado'];
-
-                break;
-            }
-
-            $stmt = $db->prepare("UPDATE contrato SET estado = 'Facturado', estadoPrevio = estado WHERE idContrato = :id");
-
-            $success = $stmt->execute([
-                ':id' => $_GET['idContrato']
-            ]);
-
-            $infoMessage = "Contrato facturado correctamente";
-            $errorMessage = "Hubo un problema al facturar el contrato";
-
-            break;
-
-
-        case 'cancelar_pago':
-            if (!comprobarEstado($contrato, ['Facturado'])) {
-                $errorMessage = "El pago del contrato no se puede deshacer si este está en estado " . $contrato['estado'];
-
-                break;
-            }
-
-            $stmt = $db->prepare("UPDATE contrato SET estado = 'Facturable', estadoPrevio = estado WHERE idContrato = :id");
-
-            $success = $stmt->execute([
-                ':id' => $_GET['idContrato']
-            ]);
-
-            $infoMessage = "Pago cancelado correctamente";
-            $errorMessage = "Hubo un problema al cancelar el pago del contrato";
-
-            break;
-
         case 'cancelar':
-            $stmt = $db->prepare("UPDATE contrato SET estado = 'Cancelado', estadoPrevio = estado WHERE idContrato = :id");
+            if (empty($_GET['notaCancelacion'])) {
+                $_GET['notaCancelacion'] = null;
+            }
+
+            $stmt = $db->prepare("UPDATE contrato SET estado = 'Cancelado', notasCancelacion = :notasCancelacion, estadoPrevio = estado WHERE idContrato = :id");
 
             $success = $stmt->execute([
-                ':id' => $_GET['idContrato']
+                ':id' => $_GET['idContrato'],
+                ':notasCancelacion' => $_GET['notaCancelacion']
             ]);
 
             $infoMessage = "Contrato cancelado correctamente";
@@ -223,7 +191,7 @@ try {
             }
 
 
-            $stmt = $db->prepare("UPDATE contrato SET estado = estadoPrevio WHERE idContrato = :id");
+            $stmt = $db->prepare("UPDATE contrato SET estado = estadoPrevio, notasCancelacion = null, retrocomision = 0 WHERE idContrato = :id");
 
             $success = $stmt->execute([
                 ':id' => $_GET['idContrato']
@@ -231,6 +199,19 @@ try {
 
             $infoMessage = "Contrato reactivado correctamente";
             $errorMessage = "Hubo un problema al reactivar el contrato";
+
+            break;
+
+        case 'retrocomision':
+            $stmt = $db->prepare("UPDATE contrato SET estado = 'Retrocomision', retrocomision = :retrocomision, estadoPrevio = estado WHERE idContrato = :id");
+
+            $success = $stmt->execute([
+                ':retrocomision' => $_GET['retrocomision'],
+                ':id' => $_GET['idContrato']
+            ]);
+
+            $infoMessage = "Contrato retrocomisionado correctamente";
+            $errorMessage = "Hubo un problema al retrocomisionar el contrato";
 
             break;
 

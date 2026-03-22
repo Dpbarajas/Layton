@@ -55,7 +55,7 @@ $where = "WHERE pv.baja = 0";
 
 // Nombre Proveedor
 if (!empty($_POST['proveedor'])) {
-    $where .= " AND UPPER(pv.nomProv) LIKE :proveedor";
+    $where .= " AND UPPER(pv.nombreProveedor) LIKE :proveedor";
 
     $proveedor = $_POST['proveedor'];
     $_SESSION['proveedores']['filtros'][':proveedor'] = "%" . strtoupper($proveedor) . "%";
@@ -136,11 +136,11 @@ endif;
     <thead class="table-primary">
     <tr>
         <th class="text-nowrap">
-            <a href="index.php?orderBy=nomProv"
+            <a href="index.php?orderBy=nombreProveedor"
                class="link-secondary link-offset-2 link-underline-opacity-50 link-underline-opacity-100-hover">
                 Nombre Proveedor
             </a>
-            <?= iconoOrden("nomProv", $orderColumn, $orderDirection) ?>
+            <?= iconoOrden("nombreProveedor", $orderColumn, $orderDirection) ?>
         </th>
         <th class="text-nowrap"><span class="opacity-50">Télefono</span></th>
         <th class="text-nowrap"><span class="opacity-50">Página Web</span></th>
@@ -148,23 +148,29 @@ endif;
     </tr>
     </thead>
     <tbody>
-    <?php foreach ($proveedores as $proveedor): ?>
+    <?php if(count($proveedores) > 0):
+        foreach ($proveedores as $proveedor): ?>
+            <tr>
+                <td style="border-right: none">
+                    <a href="/proveedores/ficha.php?idProveedor=<?= $proveedor['idProveedor'] ?>"
+                       class="link-dark"><?= $proveedor['nombreProveedor'] ?></a>
+                </td>
+                <td><?= $proveedor['telefonoProveedor'] ?></td>
+                <td><a href="<?= $proveedor['web'] ?>" target="_blank"><?= $proveedor['web'] ?></a></td>
+                <td class="text-center">
+                    <a href="/proveedores/accion.php?accion=eliminar&idProveedor=<?= $proveedor['idProveedor'] ?>"
+                       style="display: flex; width: 0; height: 100%; text-align: center; text-decoration: none;"
+                    >
+                        ❌
+                    </a>
+                </td>
+            </tr>
+        <?php endforeach;
+    else: ?>
         <tr>
-            <td style="border-right: none">
-                <a href="/proveedores/ficha.php?idProveedor=<?= $proveedor['idProveedor'] ?>"
-                   class="link-dark"><?= $proveedor['nomProv'] ?></a>
-            </td>
-            <td><?= $proveedor['telefono'] ?></td>
-            <td><a href="<?= $proveedor['web'] ?>" target="_blank"><?= $proveedor['web'] ?></a></td>
-            <td class="text-center">
-                <a href="/proveedores/accion.php?accion=eliminar&idProveedor=<?= $proveedor['idProveedor'] ?>"
-                   style="display: flex; width: 0; height: 100%; text-align: center; text-decoration: none;"
-                >
-                    ❌
-                </a>
-            </td>
+            <td class="text-center text-secondary" colspan="5">No hay proveedores disponibles</td>
         </tr>
-    <?php endforeach; ?>
+    <?php endif; ?>
     </tbody>
 </table>
 

@@ -54,25 +54,25 @@ $where = "WHERE c.baja = 0";
 
 
 // Nombre Cliente
-if (!empty($_POST['nomCli'])) {
-    $where .= " AND UPPER(c.nomCli) LIKE :nomCli";
+if (!empty($_POST['nombreCliente'])) {
+    $where .= " AND UPPER(c.nombreCliente) LIKE :nombreCliente";
 
-    $nomCliente = $_POST['nomCli'];
-    $_SESSION['clientes']['filtros'][':nomCli'] = "%" . strtoupper($nomCliente) . "%";
+    $nombreCliente = $_POST['nombreCliente'];
+    $_SESSION['clientes']['filtros'][':nombreCliente'] = "%" . strtoupper($nombreCliente) . "%";
 } else {
-    $nomCliente = '';
-    unset($_SESSION['clientes']['filtros'][':nomCli']);
+    $nombreCliente = '';
+    unset($_SESSION['clientes']['filtros'][':nombreCliente']);
 }
 
 // Nombre Cliente
-if (!empty($_POST['persona_contacto'])) {
-    $where .= " AND UPPER(c.persona_contacto) LIKE :persona_contacto";
+if (!empty($_POST['personaContacto'])) {
+    $where .= " AND UPPER(c.personaContacto) LIKE :personaContacto";
 
-    $persContacto = $_POST['persona_contacto'];
-    $_SESSION['clientes']['filtros'][':persona_contacto'] = "%" . strtoupper($persContacto) . "%";
+    $persContacto = $_POST['personaContacto'];
+    $_SESSION['clientes']['filtros'][':personaContacto'] = "%" . strtoupper($persContacto) . "%";
 } else {
     $persContacto = '';
-    unset($_SESSION['clientes']['filtros'][':persona_contacto']);
+    unset($_SESSION['clientes']['filtros'][':personaContacto']);
 }
 
 
@@ -93,6 +93,23 @@ $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 
 $stmt->execute();
 $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+// Total de clientes
+$sql = "SELECT COUNT(*) as total FROM cliente as c $where";
+
+$stmt = $db->prepare($sql);
+foreach ($_SESSION['clientes']['filtros'] as $clave => $valor) {
+    $stmt->bindValue($clave, $valor);
+}
+$stmt->execute();
+$totalClientes = $stmt->fetchColumn();
+
+// Informacion sobre la paginacion
+$totalPaginas = ceil($totalClientes / $clientesPorPagina);
+$pagInfo = "Del " . ($offset + 1) . " al " . min($offset + $clientesPorPagina, $totalClientes) . " de " . $totalClientes . " contratos.";
+
+
 
 
 $tipoMensaje = '';
@@ -140,13 +157,13 @@ endif;
 <div class="table-box mb-2 pb-0">
     <form method="POST" class="row g-3 mb-4">
         <div class="col-md-3">
-            <label for="nomCli" class="form-label">Cliente</label>
-            <input type="text" name="nomCli" id="nomCli" class="form-control" value="<?= $nomCliente ?>">
+            <label for="nombreCliente" class="form-label">Cliente</label>
+            <input type="text" name="nombreCliente" id="nombreCliente" class="form-control" value="<?= $nombreCliente ?>">
         </div>
 
         <div class="col-md-3">
-            <label for="persona_contacto" class="form-label">Persona Contacto</label>
-            <input type="text" name="persona_contacto" id="persona_contacto" class="form-control"
+            <label for="personaContacto" class="form-label">Persona Contacto</label>
+            <input type="text" name="personaContacto" id="personaContacto" class="form-control"
                    value="<?= $persContacto ?>">
         </div>
 
@@ -164,49 +181,55 @@ endif;
     <thead class="table-primary">
     <tr>
         <th class="text-nowrap">
-            <a href="index.php?orderBy=nomCli"
+            <a href="index.php?orderBy=nombreCliente"
                class="link-secondary link-offset-2 link-underline-opacity-50 link-underline-opacity-100-hover">
                 Nombre Cliente
             </a>
-            <?= iconoOrden("nomCli", $orderColumn, $orderDirection) ?>
+            <?= iconoOrden("nombreCliente", $orderColumn, $orderDirection) ?>
         </th>
         <th class="text-nowrap">
-            <a href="index.php?orderBy=persona_contacto"
+            <a href="index.php?orderBy=personaContacto"
                class="link-secondary link-offset-2 link-underline-opacity-50 link-underline-opacity-100-hover">
                 Persona de Contacto
             </a>
-            <?= iconoOrden("persona_contacto", $orderColumn, $orderDirection) ?>
+            <?= iconoOrden("personaContacto", $orderColumn, $orderDirection) ?>
         </th>
         <th class="text-nowrap">
-            <a href="index.php?orderBy=telefono"
+            <a href="index.php?orderBy=telefonoCliente"
                class="link-secondary link-offset-2 link-underline-opacity-50 link-underline-opacity-100-hover">
                 Teléfono
             </a>
-            <?= iconoOrden("telefono", $orderColumn, $orderDirection) ?>
+            <?= iconoOrden("telefonoCliente", $orderColumn, $orderDirection) ?>
         </th>
         <th class="text-nowrap"><span class="opacity-50">Correo</span></th>
         <th></th>
     </tr>
     </thead>
     <tbody>
-    <?php foreach ($clientes as $cliente): ?>
+    <?php if(count($clientes) > 0):
+        foreach ($clientes as $cliente): ?>
+            <tr>
+                <td style="border-right: none">
+                    <a href="/clientes/ficha.php?idCliente=<?= $cliente['idCliente'] ?>"
+                       class="link-dark"><?= $cliente['nombreCliente'] ?></a>
+                </td>
+                <td><?= $cliente['personaContacto'] ?></td>
+                <td><?= $cliente['telefonoCliente'] ?></td>
+                <td><?= $cliente['correoCliente'] ?></td>
+                <td class="text-center eliminar">
+                    <a href="/clientes/accion.php?accion=eliminar&idContrato=<?= $cliente['idCliente'] ?>"
+                       style="text-decoration: none;"
+                    >
+                        ❌
+                    </a>
+                </td>
+            </tr>
+        <?php endforeach;
+    else: ?>
         <tr>
-            <td style="border-right: none">
-                <a href="/clientes/ficha.php?idCliente=<?= $cliente['idCliente'] ?>"
-                   class="link-dark"><?= $cliente['nomCli'] ?></a>
-            </td>
-            <td><?= $cliente['persona_contacto'] ?></td>
-            <td><?= $cliente['telefono'] ?></td>
-            <td><?= $cliente['correo'] ?></td>
-            <td class="text-center eliminar">
-                <a href="/clientes/accion.php?accion=eliminar&idContrato=<?= $cliente['idCliente'] ?>"
-                   style="text-decoration: none;"
-                >
-                    ❌
-                </a>
-            </td>
+            <td class="text-center text-secondary" colspan="5">No hay clientes disponibles</td>
         </tr>
-    <?php endforeach; ?>
+    <?php endif; ?>
     </tbody>
 </table>
 

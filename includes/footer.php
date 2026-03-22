@@ -1,30 +1,32 @@
 </div>
 
-<script>
-    function changeAction(nameForm, newLink, accion = null, redirect = null, require = [], unrequire = []) {
-        document.getElementById(nameForm).action = newLink;
+    <script>
+        function cambiarAccion(nameForm, newLink, accion = null, redirigir = null, claseARequerir = null, claseANoRequerir = null) {
+            const form = document.getElementById(nameForm);
 
-        if (accion != null) {
-            document.getElementById("accion").value = accion;
-        } else {
-            document.getElementById("accion").value = document.getElementById("accionOriginal").value;
+            form.action = newLink;
+
+            if (accion != null) {
+                document.getElementById("accion").value = accion;
+            }
+            if (redirigir != null) {
+                document.getElementById("origen").value = redirigir;
+            }
+
+            document.querySelectorAll(`.${claseANoRequerir}`).forEach((label) => {
+                document.getElementById(label.htmlFor).required = false;
+                console.log(label.htmlFor);
+            })
+
+            console.log("-------------------");
+
+            document.querySelectorAll(`.${claseARequerir}`).forEach((label) => {
+                document.getElementById(label.htmlFor).required = true;
+                console.log(label.htmlFor);
+            });
+
         }
-
-        if (redirect != null) {
-            document.getElementById("origen").value = redirect;
-        } else {
-            document.getElementById("origen").value = document.getElementById("origenOriginal").value;
-        }
-
-        require.forEach(idForm => {
-            document.getElementById(idForm).required = true;
-        })
-
-        unrequire.forEach(idForm => {
-            document.getElementById(idForm).required = false;
-        })
-    }
-</script>
+    </script>
 
 <script>
     // Save input name and caret position before submitting
@@ -107,9 +109,9 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const dineroInputs = document.querySelectorAll('.autosubmit');
+        const submitInputs = document.querySelectorAll('.autosubmit');
 
-        dineroInputs.forEach(input => {
+        submitInputs.forEach(input => {
             input.addEventListener('click', () => {
                 const btn = document.getElementById("btn-submit");
                 btn.click();

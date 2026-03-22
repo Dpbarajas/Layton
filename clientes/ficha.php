@@ -16,10 +16,10 @@ $origen = $_SESSION['origen']['clientes'];
 // Variables iniciales
 $cliente = [
     'idCliente' => '',
-    'nomCli' => '',
-    'persona_contacto' => '',
-    'telefono' => '',
-    'correo' => '',
+    'nombreCliente' => '',
+    'personaContacto' => '',
+    'telefonoCliente' => '',
+    'correoCliente' => '',
     'baja' => ''
 ];
 
@@ -54,27 +54,27 @@ if ($modoEdicion) {
         <div class="table-box row">
             <!-- Main form fields -->
             <div class="mb-2">
-                <label for="nomCli" class="form-label requerido">Cliente</label>
-                <input type="text" required name="nomCli" id="nomCli" class="form-control"
-                       value="<?= $cliente['nomCli'] ?>">
+                <label for="nombreCliente" class="form-label requerido">Cliente</label>
+                <input type="text" required name="nombreCliente" id="nombreCliente" class="form-control"
+                       value="<?= $cliente['nombreCliente'] ?>">
             </div>
 
             <div class="mb-2">
-                <label for="persona_contacto requerido" class="form-label">Persona de Contacto</label>
-                <input type="text" required name="persona_contacto" id="persona_contacto" class="form-control"
-                       value="<?= $cliente['persona_contacto'] ?>">
+                <label for="personaContacto requerido" class="form-label">Persona de Contacto</label>
+                <input type="text" required name="personaContacto" id="personaContacto" class="form-control"
+                       value="<?= $cliente['personaContacto'] ?>">
             </div>
 
             <div class="mb-2">
-                <label for="telefono" class="form-label">Teléfono de Contacto</label>
-                <input type="tel" name="telefono" id="telefono" class="form-control"
-                       value="<?= $cliente['telefono'] ?>">
+                <label for="telefonoCliente" class="form-label">Teléfono de Contacto</label>
+                <input type="tel" name="telefonoCliente" id="telefonoCliente" class="form-control"
+                       value="<?= $cliente['telefonoCliente'] ?>">
             </div>
 
             <div class="mb-2">
-                <label for="correo" class="form-label">Correo de Contacto</label>
-                <input type="text" name="correo" id="correo" class="form-control"
-                       value="<?= $cliente['correo'] ?>">
+                <label for="correoCliente" class="form-label">Correo de Contacto</label>
+                <input type="text" name="correoCliente" id="correoCliente" class="form-control"
+                       value="<?= $cliente['correoCliente'] ?>">
             </div>
 
             <div class="d-flex justify-content-between mt-4">

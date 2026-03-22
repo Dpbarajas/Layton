@@ -10,13 +10,13 @@ $success = false;
 
 if ($action == 'crear' || $action == 'editar') {
     if ($_POST['proveedor'] === "0") {
-        if ($_POST['nomProv'] != '') {
-            $stmt = $db->prepare("INSERT INTO proveedor (nomProv, telefono, web) 
-                              VALUES (:nomProv, :telefono, :web)");
+        if ($_POST['nombreProveedor'] != '') {
+            $stmt = $db->prepare("INSERT INTO proveedor (nombreProveedor, telefonoProveedor, web) 
+                              VALUES (:nombreProveedor, :telefono, :web)");
 
             $success = $stmt->execute([
-                ':nomProv' => $_POST['nomProv'],
-                ':telefono' => $_POST['telefono'],
+                ':nombreProveedor' => $_POST['nombreProveedor'],
+                ':telefonoProveedor' => $_POST['telefonoProveedor'],
                 ':web' => $_POST['web']
             ]);
 
@@ -37,14 +37,14 @@ if ($action == 'crear' || $action == 'editar') {
 try {
     switch ($action) {
         case 'crear':
-            $stmt = $db->prepare("INSERT INTO producto (nomProd, proveedor, retrocomision, notasProd) 
-                              VALUES (:nomProd, :proveedor, :retrocomision, :notasProd)");
+            $stmt = $db->prepare("INSERT INTO producto (nombreProveedor, proveedor, tipoRetrocomision, notasProducto) 
+                              VALUES (:nombreProveedor, :proveedor, :tipoRetrocomision, :notasProducto)");
 
             $success = $stmt->execute([
-                ':nomProd' => $_POST['nomProd'],
+                ':nombreProveedor' => $_POST['nombreProveedor'],
                 ':proveedor' => $_POST['proveedor'],
-                ':retrocomision' => empty($_POST['retrocomision']) ? null : $_POST['retrocomision'],
-                ':notasProd' => $_POST['notasProd']
+                ':tipoRetrocomision' => empty($_POST['tipoRetrocomision']) ? null : $_POST['tipoRetrocomision'],
+                ':notasProducto' => $_POST['notasProducto']
             ]);
 
             $infoMessage = "Producto creado correctamente";
@@ -56,17 +56,17 @@ try {
             $prodOriginal = $db->query("SELECT * FROM producto WHERE idProducto = " .$_POST['idProducto'])->fetch(PDO::FETCH_ASSOC);
 
             $stmt = $db->prepare("UPDATE producto 
-                              SET nomProd = :nomProd,
+                              SET nombreProveedor = :nombreProveedor,
                                   proveedor = :proveedor,
-                                  retrocomision = :retrocomision,
-                                  notasProd = :notasProd
+                                  tipoRetrocomision = :tipoRetrocomision,
+                                  notasProducto = :notasProducto
                               WHERE idProducto = :id");
 
             $success = $stmt->execute([
-                ':nomProd' => $_POST['nomProd'],
+                ':nombreProveedor' => $_POST['nombreProveedor'],
                 ':proveedor' => $_POST['proveedor'],
-                ':retrocomision' => empty($_POST['retrocomision']) ? null : $_POST['retrocomision'],
-                ':notasProd' => $_POST['notasProd'],
+                ':tipoRetrocomision' => empty($_POST['tipoRetrocomision']) ? null : $_POST['tipoRetrocomision'],
+                ':notasProducto' => $_POST['notasProducto'],
                 ':id' => $_POST['idProducto']
             ]);
 

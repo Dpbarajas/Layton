@@ -140,31 +140,36 @@ $totalGastos = 0;
                     </tr>
                     </thead>
                     <tbody>
-                    <?php foreach ($ingresos as $ingreso):
-                        $ingIva = $ingreso['baseImponible'] * $ingreso['iva'] / 100;
-                        $ingIrpf = $ingreso['baseImponible'] * $ingreso['irpf'] / 100;
-                        $ingTotal = $ingreso['baseImponible'] + $ingIva - $ingIrpf;
-                        ?>
-                        <tr class="clickable"
-                            data-url="/balances/ficha.php?tipoBalance=ingreso&idBalance=<?= $ingreso['idIngreso'] ?>">
-                            <td><?= $ingreso['fecha'] ?></td>
-                            <td><?= $ingreso['empresa'] ?></td>
-                            <td class="text-end"><?= number_format($ingreso['baseImponible'], 2) . " €" ?></td>
-                            <td class="text-end"><?= number_format($ingIrpf, 2) . " €" ?></td>
-                            <td class="text-end"><?= number_format($ingIva, 2) . " €" ?></td>
-                            <td class="text-end"><?= number_format($ingTotal, 2) . " €" ?></td>
-                            <td>
-                                <a href="accion.php?accion=eliminar&idBalance=<?= $ingreso['idIngreso'] ?>&tipoBalance=ingreso"
-                                   style="text-decoration: none;">❌</a>
-                            </td>
+                    <?php if(count($ingresos) > 0):
+                        foreach ($ingresos as $ingreso):
+                            $ingIva = $ingreso['baseImponible'] * $ingreso['iva'] / 100;
+                            $ingIrpf = $ingreso['baseImponible'] * $ingreso['irpf'] / 100;
+                            $ingTotal = $ingreso['baseImponible'] + $ingIva - $ingIrpf;
+                            ?>
+                            <tr class="clickable"
+                                data-url="/balances/ficha.php?tipoBalance=ingreso&idBalance=<?= $ingreso['idIngreso'] ?>">
+                                <td><?= $ingreso['fecha'] ?></td>
+                                <td><?= $ingreso['empresa'] ?></td>
+                                <td class="text-end"><?= number_format($ingreso['baseImponible'], 2) . " €" ?></td>
+                                <td class="text-end"><?= number_format($ingIrpf, 2) . " €" ?></td>
+                                <td class="text-end"><?= number_format($ingIva, 2) . " €" ?></td>
+                                <td class="text-end"><?= number_format($ingTotal, 2) . " €" ?></td>
+                                <td>
+                                    <a href="accion.php?accion=eliminar&idBalance=<?= $ingreso['idIngreso'] ?>&tipoBalance=ingreso"
+                                       style="text-decoration: none;">❌</a>
+                                </td>
+                            </tr>
+                            <?php
+                            $totalIngBase += $ingreso['baseImponible'];
+                            $totalIngIva += $ingIva;
+                            $totalIngIrpf += $ingIrpf;
+                            $totalIngresos += $ingTotal;
+                        endforeach;
+                    else: ?>
+                        <tr>
+                            <td class="text-center text-secondary" colspan="7">No hay ingresos disponibles</td>
                         </tr>
-                        <?php
-                        $totalIngBase += $ingreso['baseImponible'];
-                        $totalIngIva += $ingIva;
-                        $totalIngIrpf += $ingIrpf;
-                        $totalIngresos += $ingTotal;
-
-                    endforeach; ?>
+                    <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -190,30 +195,36 @@ $totalGastos = 0;
                     </tr>
                     </thead>
                     <tbody>
-                    <?php foreach ($gastos as $gasto):
-                        $gasIva = $gasto['baseImponible'] * $gasto['iva'] / 100;
-                        $gasIrpf = $gasto['baseImponible'] * $gasto['irpf'] / 100;
-                        $gasTotal = $gasto['baseImponible'] + $gasIva - $gasIrpf;
-                        ?>
-                        <tr class="clickable"
-                            data-url="/balances/ficha.php?tipoBalance=gasto&idBalance=<?= $gasto['idGasto'] ?>">
-                            <td><?= $gasto['fecha'] ?></td>
-                            <td><?= $gasto['empresa'] ?></td>
-                            <td class="text-end"><?= number_format($gasto['baseImponible'], 2) . " €" ?></td>
-                            <td class="text-end"><?= number_format($gasIrpf, 2) . " €" ?></td>
-                            <td class="text-end"><?= number_format($gasIva, 2) . " €" ?></td>
-                            <td class="text-end"><?= number_format($gasTotal, 2) . " €" ?></td>
-                            <td>
-                                <a href="accion.php?accion=eliminar&idBalance=<?= $gasto['idGasto'] ?>&tipoBalance=gasto"
-                                   style="text-decoration: none;">❌</a></td>
-                        </tr>
-                        <?php
-                        $totalGasBase += $gasto['baseImponible'];
-                        $totalGasIva += $gasIva;
-                        $totalGasIrpf += $gasIrpf;
-                        $totalGastos += $gasTotal;
+                    <?php if(count($gastos) > 0):
+                        foreach ($gastos as $gasto):
+                            $gasIva = $gasto['baseImponible'] * $gasto['iva'] / 100;
+                            $gasIrpf = $gasto['baseImponible'] * $gasto['irpf'] / 100;
+                            $gasTotal = $gasto['baseImponible'] + $gasIva - $gasIrpf;
+                            ?>
+                            <tr class="clickable"
+                                data-url="/balances/ficha.php?tipoBalance=gasto&idBalance=<?= $gasto['idGasto'] ?>">
+                                <td><?= $gasto['fecha'] ?></td>
+                                <td><?= $gasto['empresa'] ?></td>
+                                <td class="text-end"><?= number_format($gasto['baseImponible'], 2) . " €" ?></td>
+                                <td class="text-end"><?= number_format($gasIrpf, 2) . " €" ?></td>
+                                <td class="text-end"><?= number_format($gasIva, 2) . " €" ?></td>
+                                <td class="text-end"><?= number_format($gasTotal, 2) . " €" ?></td>
+                                <td>
+                                    <a href="accion.php?accion=eliminar&idBalance=<?= $gasto['idGasto'] ?>&tipoBalance=gasto"
+                                       style="text-decoration: none;">❌</a></td>
+                            </tr>
+                            <?php
+                            $totalGasBase += $gasto['baseImponible'];
+                            $totalGasIva += $gasIva;
+                            $totalGasIrpf += $gasIrpf;
+                            $totalGastos += $gasTotal;
 
-                    endforeach; ?>
+                        endforeach;
+                    else: ?>
+                        <tr>
+                            <td class="text-center text-secondary" colspan="7">No hay gastos disponibles</td>
+                        </tr>
+                    <?php endif; ?>
                     </tbody>
                 </table>
             </div>

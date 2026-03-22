@@ -16,8 +16,8 @@ $modoEdicion = $idProveedor !== 0;
 
 // Variables iniciales
 $proveedor = [
-    'nomProv' => '',
-    'telefono' => '',
+    'nombreProveedor' => '',
+    'telefonoProveedor' => '',
     'web' => ''
 ];
 
@@ -54,13 +54,13 @@ if ($modoEdicion) {
         <div class="table-box row">
             <!-- Main form fields -->
                 <div class="mb-2">
-                    <label for="nomProv" class="form-label requerido">Nombre Proveedor</label>
-                    <input type="text" id="nomProv" name="nomProv" class="form-control" value="<?= $proveedor['nomProv'] ?>" required>
+                    <label for="nombreProveedor" class="form-label requerido">Nombre Proveedor</label>
+                    <input type="text" id="nombreProveedor" name="nombreProveedor" class="form-control" value="<?= $proveedor['nombreProveedor'] ?>" required>
                 </div>
 
                 <div class="mb-2">
-                    <label for="telefono" class="form-label">Telefono</label>
-                    <input type="text" name="telefono" id="telefono" class="form-control" value="<?= $proveedor['telefono'] ?>">
+                    <label for="telefonoProveedor" class="form-label">Telefono</label>
+                    <input type="text" name="telefonoProveedor" id="telefonoProveedor" class="form-control" value="<?= $proveedor['telefonoProveedor'] ?>">
                 </div>
 
                 <div class="mb-2">

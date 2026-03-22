@@ -12,14 +12,14 @@ $success = false;
 try {
     switch ($accion) {
         case 'crear':
-            $stmt = $db->prepare("INSERT INTO cliente (nomCli, persona_contacto, telefono, correo) 
-                              VALUES (:nomCli, :persona_contacto, :telefono, :correo)");
+            $stmt = $db->prepare("INSERT INTO cliente (nombreCliente, personaContacto, telefonoCliente, correoCliente) 
+                              VALUES (:nombreCliente, :personaContacto, :telefonoCliente, :correoCliente)");
 
             $success = $stmt->execute([
-                ':nomCli' => $_POST['nomCli'],
-                ':persona_contacto' => $_POST['persona_contacto'],
-                ':telefono' => $_POST['telefono'],
-                ':correo' => $_POST['correo']
+                ':nombreCliente' => $_POST['nombreCliente'],
+                ':personaContacto' => $_POST['personaContacto'],
+                ':telefonoCliente' => $_POST['telefonoCliente'],
+                ':correoCliente' => $_POST['correoCliente']
             ]);
 
             $infoMessage = "Cliente creado correctamente";
@@ -30,17 +30,17 @@ try {
         case 'editar':
 
             $stmt = $db->prepare("UPDATE cliente 
-                              SET nomCli = :nomCli,
-                                  persona_contacto = :persona_contacto,
-                                  telefono = :telefono,
-                                  correo = :correo
+                              SET nombreCliente = :nombreCliente,
+                                  personaContacto = :personaContacto,
+                                  telefonoCliente = :telefonoCliente,
+                                  correoCliente = :correoCliente
                               WHERE idCliente = :id");
 
             $success = $stmt->execute([
-                ':nomCli' => $_POST['nomCli'],
-                ':persona_contacto' => $_POST['persona_contacto'],
-                ':telefono' => $_POST['telefono'],
-                ':correo' => $_POST['correo'],
+                ':nombreCliente' => $_POST['nombreCliente'],
+                ':personaContacto' => $_POST['personaContacto'],
+                ':telefonoCliente' => $_POST['telefonoCliente'],
+                ':correoCliente' => $_POST['correoCliente'],
                 ':id' => $_POST['idCliente']
             ]);
 
